@@ -24,9 +24,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,12 +35,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abhinand.pixbittest.R
 import com.abhinand.pixbittest.core.theme.interRegular
 import com.abhinand.pixbittest.core.theme.interSemiBold
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier) {
+fun LoginScreen(modifier: Modifier = Modifier, viewModel: LoginViewModel = hiltViewModel()) {
+
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold { contentPadding ->
 
@@ -88,13 +89,9 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                     modifier = Modifier.padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    var email by remember { mutableStateOf("") }
-                    var password by remember { mutableStateOf("") }
-                    var passwordVisible by remember { mutableStateOf(false) }
-
                     TextField(
-                        value = email,
-                        onValueChange = { email = it },
+                        value = state.email,
+                        onValueChange = { viewModel.onEmailChange(it) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
@@ -119,8 +116,8 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     TextField(
-                        value = password,
-                        onValueChange = { password = it },
+                        value = state.password,
+                        onValueChange = { viewModel.onPasswordChange(it) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(10.dp))
@@ -133,10 +130,10 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                             )
                         },
                         trailingIcon = {
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            IconButton(onClick = { viewModel.onPasswordVisibilityChange() }) {
                                 Icon(
                                     modifier = Modifier.size(20.dp),
-                                    painter = if (passwordVisible)
+                                    painter = if (state.isPasswordVisible)
                                         painterResource(R.drawable.ic_eye_open)
                                     else
                                         painterResource(R.drawable.ic_eye_close),
@@ -144,7 +141,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                                 )
                             }
                         },
-                        visualTransformation = if (passwordVisible)
+                        visualTransformation = if (state.isPasswordVisible)
                             VisualTransformation.None
                         else
                             PasswordVisualTransformation(),
