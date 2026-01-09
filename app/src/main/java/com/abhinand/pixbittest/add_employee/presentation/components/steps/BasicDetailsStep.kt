@@ -1,5 +1,6 @@
 package com.abhinand.pixbittest.add_employee.presentation.components.steps
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -17,9 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -28,6 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -91,32 +92,30 @@ fun ProfileImagePicker() {
     ) {
         Box(
             modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
-                .background(Color(0xFFE6E6E6)),
+                .size(125.dp)
+                .clip(CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.Person,
+            Image(
+                painter = painterResource(R.drawable.img_employee_placeholder),
                 contentDescription = null,
-                tint = Color(0xFF9E9E9E),
-                modifier = Modifier.size(56.dp)
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(125.dp)
             )
         }
 
         Box(
             modifier = Modifier
-                .offset(x = 36.dp, y = 36.dp)
-                .size(36.dp)
+                .offset(x = 44.dp, y = 44.dp)
+                .size(44.dp)
                 .clip(CircleShape)
                 .background(Color(0xFFE9F3FF)),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
+            Image(
+                painter = painterResource(R.drawable.ic_edit),
                 contentDescription = null,
-                tint = Color(0xFF2979FF),
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(44.dp)
             )
         }
     }
