@@ -38,11 +38,17 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abhinand.pixbittest.R
+import com.abhinand.pixbittest.core.navigation.Action
+import com.abhinand.pixbittest.core.navigation.Screen
 import com.abhinand.pixbittest.core.theme.interRegular
 import com.abhinand.pixbittest.core.theme.interSemiBold
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier, viewModel: LoginViewModel = hiltViewModel()) {
+fun LoginScreen(
+    modifier: Modifier = Modifier,
+    onNavigate: (Action) -> Unit,
+    viewModel: LoginViewModel = hiltViewModel()
+) {
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -178,7 +184,7 @@ fun LoginScreen(modifier: Modifier = Modifier, viewModel: LoginViewModel = hiltV
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    TextButton(onClick = { /*TODO*/ }) {
+                    TextButton(onClick = { onNavigate(Action.Push(Screen.Register)) }) {
                         Text(
                             text = stringResource(R.string.register_now),
                             color = Color(0xFF153F67),
