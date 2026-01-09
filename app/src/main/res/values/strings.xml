@@ -16,4 +16,6 @@
     <string name="add_employee">Add Employee</string>
     <string name="profile_da">Profile Details</string>
     <string name="profile_details">Profile Details</string>
+    <string name="enter_mobile_number">Enter Mobile Number</string>
+    <string name="enter_email_address">Enter Email Address</string>
 </resources>
