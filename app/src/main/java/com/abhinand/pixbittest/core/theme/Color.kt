@@ -12,6 +12,6 @@ val Pink40 = Color(0xFF7D5260)
 
 
 val Primary = Color(0xFF153F67)
-val Secondary = Color(0xFFE4F1F6)
+val Container = Color(0xFFE4F1F6)
 
-val TextFieldBorder = Color(0xFF3485D1)
+val Secondary = Color(0xFF3485D1)

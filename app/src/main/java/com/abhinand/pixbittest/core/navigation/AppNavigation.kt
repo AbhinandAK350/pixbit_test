@@ -43,7 +43,7 @@ fun AppNavigation() {
             }
 
             entry<Screen.Register> {
-                RegisterScreen()
+                RegisterScreen(onNavigate = ::handleNavigation)
             }
         }
     )

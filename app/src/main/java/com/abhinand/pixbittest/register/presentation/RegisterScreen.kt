@@ -6,10 +6,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -23,44 +22,53 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abhinand.pixbittest.R
+import com.abhinand.pixbittest.core.navigation.Action
+import com.abhinand.pixbittest.core.theme.Container
 import com.abhinand.pixbittest.core.theme.Primary
 import com.abhinand.pixbittest.core.theme.Secondary
-import com.abhinand.pixbittest.core.theme.TextFieldBorder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(modifier: Modifier = Modifier) {
+fun RegisterScreen(
+    modifier: Modifier = Modifier,
+    onNavigate: (Action) -> Unit,
+    viewModel: RegisterViewModel = hiltViewModel()
+) {
+
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(topBar = {
         TopAppBar(
             title = {
                 Text(
                     modifier = modifier.padding(start = 10.dp),
-                    text = "Register",
+                    text = stringResource(R.string.register),
                     fontWeight = FontWeight.W500,
                     color = Primary,
                     fontSize = 20.sp
                 )
             },
             navigationIcon = {
-                Icon(
-                    imageVector = Icons.Rounded.ArrowBackIosNew,
-                    contentDescription = null
-                )
+                IconButton(onClick = { onNavigate(Action.Pop) }) {
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowBackIosNew,
+                        contentDescription = null
+                    )
+                }
             },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = Secondary)
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Container)
         )
     }) { contentPadding ->
         Column(
@@ -68,13 +76,6 @@ fun RegisterScreen(modifier: Modifier = Modifier) {
                 .padding(contentPadding)
                 .padding(16.dp)
         ) {
-            var name by remember { mutableStateOf("") }
-            var email by remember { mutableStateOf("") }
-            var password by remember { mutableStateOf("") }
-            var confirmPassword by remember { mutableStateOf("") }
-            var passwordVisible by remember { mutableStateOf(false) }
-            var confirmPasswordVisible by remember { mutableStateOf(false) }
-
             Text(
                 text = stringResource(R.string.name),
                 fontWeight = FontWeight.W600,
@@ -84,17 +85,23 @@ fun RegisterScreen(modifier: Modifier = Modifier) {
             )
             Spacer(modifier = modifier.height(12.dp))
             OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
+                value = state.name,
+                onValueChange = { viewModel.onNameChange(it) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
                     .border(
                         width = 0.5.dp,
-                        color = TextFieldBorder,
+                        color = Secondary,
                         shape = RoundedCornerShape(10.dp)
                     ),
-                placeholder = { Text(stringResource(R.string.enter_name), letterSpacing = 0.sp) },
+                placeholder = {
+                    Text(
+                        stringResource(R.string.enter_name),
+                        letterSpacing = 0.sp,
+                        color = Color(0xFFB1B1B1)
+                    )
+                },
                 shape = RoundedCornerShape(10.dp)
             )
 
@@ -108,20 +115,21 @@ fun RegisterScreen(modifier: Modifier = Modifier) {
             )
             Spacer(modifier = modifier.height(12.dp))
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
+                value = state.email,
+                onValueChange = { viewModel.onEmailChange(it) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
                     .border(
                         width = 0.5.dp,
-                        color = TextFieldBorder,
+                        color = Secondary,
                         shape = RoundedCornerShape(10.dp)
                     ),
                 placeholder = {
                     Text(
                         stringResource(R.string.enter_mail_address),
-                        letterSpacing = 0.sp
+                        letterSpacing = 0.sp,
+                        color = Color(0xFFB1B1B1)
                     )
                 },
                 shape = RoundedCornerShape(10.dp)
@@ -132,33 +140,38 @@ fun RegisterScreen(modifier: Modifier = Modifier) {
             Text(text = "Password", fontWeight = FontWeight.W600, color = Primary, fontSize = 14.sp)
             Spacer(modifier = modifier.height(12.dp))
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = state.password,
+                onValueChange = { viewModel.onPasswordChange(it) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
                     .border(
                         width = 0.5.dp,
-                        color = TextFieldBorder,
+                        color = Secondary,
                         shape = RoundedCornerShape(10.dp)
                     ),
                 placeholder = {
                     Text(
                         stringResource(R.string.enter_password),
-                        letterSpacing = 0.sp
+                        letterSpacing = 0.sp,
+                        color = Color(0xFFB1B1B1)
                     )
                 },
                 trailingIcon = {
-                    val image = if (passwordVisible)
-                        Icons.Filled.Visibility
-                    else Icons.Filled.VisibilityOff
-                    val description = if (passwordVisible) "Hide password" else "Show password"
+                    val image = if (state.isPasswordVisible)
+                        R.drawable.ic_eye_open
+                    else R.drawable.ic_eye_close
 
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(imageVector = image, description)
+                    IconButton(
+                        onClick = { viewModel.onPasswordVisibilityChange() }) {
+                        Icon(
+                            modifier = modifier.size(20.dp),
+                            painter = painterResource(image),
+                            contentDescription = null
+                        )
                     }
                 },
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                visualTransformation = if (state.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 shape = RoundedCornerShape(10.dp)
             )
 
@@ -173,47 +186,52 @@ fun RegisterScreen(modifier: Modifier = Modifier) {
             )
             Spacer(modifier = modifier.height(12.dp))
             OutlinedTextField(
-                value = confirmPassword,
-                onValueChange = { confirmPassword = it },
+                value = state.confirmPassword,
+                onValueChange = { viewModel.onConfirmPasswordChange(it) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
                     .border(
                         width = 0.5.dp,
-                        color = TextFieldBorder,
+                        color = Secondary,
                         shape = RoundedCornerShape(10.dp)
                     ),
                 placeholder = {
                     Text(
                         stringResource(R.string.enter_password),
-                        letterSpacing = 0.sp
+                        letterSpacing = 0.sp,
+                        color = Color(0xFFB1B1B1)
                     )
                 },
                 trailingIcon = {
-                    val image = if (confirmPasswordVisible)
-                        Icons.Filled.Visibility
-                    else Icons.Filled.VisibilityOff
-                    val description =
-                        if (confirmPasswordVisible) "Hide password" else "Show password"
+                    val image = if (state.isConfirmPasswordVisible)
+                        R.drawable.ic_eye_open
+                    else R.drawable.ic_eye_close
 
-                    IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
-                        Icon(imageVector = image, description)
+                    IconButton(
+                        onClick = { viewModel.onConfirmPasswordVisibilityChange() }) {
+                        Icon(
+                            modifier = modifier.size(20.dp),
+                            painter = painterResource(image),
+                            contentDescription = null
+                        )
                     }
                 },
-                visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                visualTransformation = if (state.isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 shape = RoundedCornerShape(10.dp)
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { viewModel.onRegisterButtonClick() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
+                enabled = state.isRegisterButtonEnabled,
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF4A90E2)
+                    containerColor = Secondary
                 )
             ) {
                 Text(

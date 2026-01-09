@@ -16,6 +16,10 @@ val interSemiBold = FontFamily(
     Font(R.font.inter_semibold, FontWeight.SemiBold)
 )
 
+val interMedium = FontFamily(
+    Font(R.font.inter_medium, FontWeight.SemiBold)
+)
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(
