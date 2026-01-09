@@ -11,4 +11,7 @@ sealed class Screen : NavKey {
     @Serializable
     object Register : Screen()
 
+    @Serializable
+    object Home : Screen()
+
 }

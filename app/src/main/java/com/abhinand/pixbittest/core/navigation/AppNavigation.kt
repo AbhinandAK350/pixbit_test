@@ -6,13 +6,14 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.abhinand.pixbittest.home.presentation.HomeScreen
 import com.abhinand.pixbittest.login.presentation.LoginScreen
 import com.abhinand.pixbittest.register.presentation.RegisterScreen
 
 @Composable
 fun AppNavigation() {
 
-    val backStack = rememberNavBackStack(Screen.LoginScreen)
+    val backStack = rememberNavBackStack(Screen.Home)
 
     fun onBackPress() {
         if (backStack.size > 1) {
@@ -44,6 +45,10 @@ fun AppNavigation() {
 
             entry<Screen.Register> {
                 RegisterScreen(onNavigate = ::handleNavigation)
+            }
+
+            entry<Screen.Home> {
+                HomeScreen(onNavigate = ::handleNavigation)
             }
         }
     )
