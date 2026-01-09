@@ -14,4 +14,6 @@
     <string name="register">Register</string>
     <string name="employees">Employees</string>
     <string name="add_employee">Add Employee</string>
+    <string name="profile_da">Profile Details</string>
+    <string name="profile_details">Profile Details</string>
 </resources>

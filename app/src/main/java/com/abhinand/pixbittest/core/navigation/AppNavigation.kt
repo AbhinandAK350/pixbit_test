@@ -9,6 +9,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.abhinand.pixbittest.add_employee.presentation.AddEmployeeScreen
 import com.abhinand.pixbittest.home.presentation.HomeScreen
 import com.abhinand.pixbittest.login.presentation.LoginScreen
+import com.abhinand.pixbittest.profile_details.presentation.ProfileDetailsScreen
 import com.abhinand.pixbittest.register.presentation.RegisterScreen
 
 @Composable
@@ -54,6 +55,10 @@ fun AppNavigation() {
 
             entry<Screen.AddEmployee> {
                 AddEmployeeScreen(onNavigate = ::handleNavigation)
+            }
+
+            entry<Screen.ProfileDetails> {
+                ProfileDetailsScreen(onNavigate = ::handleNavigation)
             }
         }
     )

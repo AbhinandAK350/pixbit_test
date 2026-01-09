@@ -1,5 +1,6 @@
 package com.abhinand.pixbittest.home.presentation.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,10 +33,16 @@ import com.abhinand.pixbittest.core.theme.interRegular
 @Composable
 fun EmployeeItem(
     modifier: Modifier = Modifier,
-    employeeImageUrl: String
+    employeeImageUrl: String,
+    onItemClick: () -> Unit
 ) {
 
-    Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = { onItemClick() }),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(employeeImageUrl)
@@ -75,5 +82,5 @@ fun EmployeeItem(
 @Preview(showBackground = true)
 @Composable
 fun PreviewEmployee() {
-    EmployeeItem(employeeImageUrl = "")
+    EmployeeItem(employeeImageUrl = "", onItemClick = {})
 }

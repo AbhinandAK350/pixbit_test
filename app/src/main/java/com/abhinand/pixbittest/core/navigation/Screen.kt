@@ -17,4 +17,7 @@ sealed class Screen : NavKey {
     @Serializable
     object AddEmployee : Screen()
 
+    @Serializable
+    data class ProfileDetails(val employeeId: String) : Screen()
+
 }

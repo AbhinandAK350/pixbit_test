@@ -64,7 +64,9 @@ fun HomeScreen(modifier: Modifier = Modifier, onNavigate: (Action) -> Unit) {
         ) {
 
             items(20) {
-                EmployeeItem(employeeImageUrl = "")
+                EmployeeItem(employeeImageUrl = "", onItemClick = {
+                    onNavigate(Action.Push(Screen.ProfileDetails("0")))
+                })
             }
 
         }
