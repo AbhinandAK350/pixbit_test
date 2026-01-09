@@ -12,12 +12,20 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
 
+    private fun checkLoginButtonEnabled() {
+        val currentState = _uiState.value
+        val isEnabled = currentState.email.isNotEmpty() && currentState.password.isNotEmpty()
+        _uiState.value = _uiState.value.copy(isLoginButtonEnabled = isEnabled)
+    }
+
     fun onEmailChange(email: String) {
         _uiState.value = _uiState.value.copy(email = email)
+        checkLoginButtonEnabled()
     }
 
     fun onPasswordChange(password: String) {
         _uiState.value = _uiState.value.copy(password = password)
+        checkLoginButtonEnabled()
     }
 
     fun onPasswordVisibilityChange() {

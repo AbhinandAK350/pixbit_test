@@ -162,6 +162,7 @@ fun LoginScreen(modifier: Modifier = Modifier, viewModel: LoginViewModel = hiltV
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
+                        enabled = state.isLoginButtonEnabled,
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF3485D1)
