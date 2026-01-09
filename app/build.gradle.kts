@@ -75,6 +75,8 @@ dependencies {
     implementation(libs.kotlin.metadata.jvm)
     ksp(libs.kotlin.metadata.jvm)
 
+    implementation(libs.coil.compose)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
