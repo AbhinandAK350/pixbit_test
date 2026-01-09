@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.abhinand.pixbittest.R
 import com.abhinand.pixbittest.core.navigation.Action
+import com.abhinand.pixbittest.core.navigation.Screen
 import com.abhinand.pixbittest.core.theme.Container
 import com.abhinand.pixbittest.core.theme.Primary
 import com.abhinand.pixbittest.core.theme.Secondary
@@ -44,7 +45,7 @@ fun HomeScreen(modifier: Modifier = Modifier, onNavigate: (Action) -> Unit) {
         }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Container))
     }, floatingActionButton = {
         FloatingActionButton(
-            onClick = { /*TODO*/ },
+            onClick = { onNavigate(Action.Push(Screen.AddEmployee)) },
             shape = CircleShape,
             containerColor = Secondary
         ) {

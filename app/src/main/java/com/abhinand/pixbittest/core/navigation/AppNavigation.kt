@@ -6,6 +6,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.abhinand.pixbittest.add_employee.presentation.AddEmployeeScreen
 import com.abhinand.pixbittest.home.presentation.HomeScreen
 import com.abhinand.pixbittest.login.presentation.LoginScreen
 import com.abhinand.pixbittest.register.presentation.RegisterScreen
@@ -49,6 +50,10 @@ fun AppNavigation() {
 
             entry<Screen.Home> {
                 HomeScreen(onNavigate = ::handleNavigation)
+            }
+
+            entry<Screen.AddEmployee> {
+                AddEmployeeScreen(onNavigate = ::handleNavigation)
             }
         }
     )

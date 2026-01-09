@@ -14,4 +14,7 @@ sealed class Screen : NavKey {
     @Serializable
     object Home : Screen()
 
+    @Serializable
+    object AddEmployee : Screen()
+
 }
