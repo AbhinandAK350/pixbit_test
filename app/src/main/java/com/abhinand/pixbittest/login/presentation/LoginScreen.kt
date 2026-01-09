@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abhinand.pixbittest.R
 import com.abhinand.pixbittest.core.navigation.Action
 import com.abhinand.pixbittest.core.navigation.Screen
+import com.abhinand.pixbittest.core.theme.interMedium
 import com.abhinand.pixbittest.core.theme.interRegular
 import com.abhinand.pixbittest.core.theme.interSemiBold
 
@@ -102,7 +103,13 @@ fun LoginScreen(
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
                             .background(Color.White),
-                        placeholder = { Text(stringResource(R.string.email)) },
+                        placeholder = {
+                            Text(
+                                stringResource(R.string.email),
+                                color = Color(0xFF56728C),
+                                fontFamily = interMedium
+                            )
+                        },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Outlined.Email,
@@ -128,7 +135,13 @@ fun LoginScreen(
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(10.dp))
                             .background(Color.White),
-                        placeholder = { Text(stringResource(R.string.password)) },
+                        placeholder = {
+                            Text(
+                                stringResource(R.string.password),
+                                color = Color(0xFF56728C),
+                                fontFamily = interMedium
+                            )
+                        },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Outlined.Lock,
@@ -164,7 +177,7 @@ fun LoginScreen(
                     Spacer(modifier = Modifier.height(32.dp))
 
                     Button(
-                        onClick = { /*TODO*/ },
+                        onClick = { viewModel.onLoginClick() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
