@@ -1,6 +1,5 @@
-package com.abhinand.pixbittest.ui.theme
+package com.abhinand.pixbittest.core.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

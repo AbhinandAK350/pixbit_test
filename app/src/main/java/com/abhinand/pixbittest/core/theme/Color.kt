@@ -1,4 +1,4 @@
-package com.abhinand.pixbittest.ui.theme
+package com.abhinand.pixbittest.core.theme
 
 import androidx.compose.ui.graphics.Color
 
