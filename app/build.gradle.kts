@@ -66,6 +66,9 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.converter)
 
+    implementation(libs.kotlin.metadata.jvm)
+    ksp(libs.kotlin.metadata.jvm)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
