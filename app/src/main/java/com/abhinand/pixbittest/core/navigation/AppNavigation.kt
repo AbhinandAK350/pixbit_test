@@ -7,6 +7,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.abhinand.pixbittest.login.presentation.LoginScreen
+import com.abhinand.pixbittest.register.presentation.RegisterScreen
 
 @Composable
 fun AppNavigation() {
@@ -38,7 +39,11 @@ fun AppNavigation() {
             rememberViewModelStoreNavEntryDecorator()
         ), entryProvider = entryProvider {
             entry<Screen.LoginScreen> {
-                LoginScreen()
+                LoginScreen(onNavigate = ::handleNavigation)
+            }
+
+            entry<Screen.Register> {
+                RegisterScreen()
             }
         }
     )

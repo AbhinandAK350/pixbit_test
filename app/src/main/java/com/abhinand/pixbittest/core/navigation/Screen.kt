@@ -8,4 +8,7 @@ sealed class Screen : NavKey {
     @Serializable
     object LoginScreen : Screen()
 
+    @Serializable
+    object Register : Screen()
+
 }
