@@ -1,5 +1,6 @@
 package com.abhinand.pixbittest.login.di
 
+import com.abhinand.pixbittest.core.data.DataStore
 import com.abhinand.pixbittest.core.network.NetworkUtils
 import com.abhinand.pixbittest.login.data.remote.LoginApi
 import com.abhinand.pixbittest.login.data.repository.LoginRepositoryImpl
@@ -23,7 +24,11 @@ object LoginModule {
 
     @Provides
     @Singleton
-    fun provideLoginRepository(api: LoginApi, networkUtils: NetworkUtils): LoginRepository {
-        return LoginRepositoryImpl(api, networkUtils)
+    fun provideLoginRepository(
+        api: LoginApi,
+        networkUtils: NetworkUtils,
+        dataStore: DataStore
+    ): LoginRepository {
+        return LoginRepositoryImpl(api, networkUtils, dataStore)
     }
 }

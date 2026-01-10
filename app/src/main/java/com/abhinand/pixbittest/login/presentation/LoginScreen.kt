@@ -183,7 +183,7 @@ fun LoginScreen(
                     Spacer(modifier = Modifier.height(32.dp))
 
                     Button(
-                        onClick = { if (!state.isLoading) viewModel.onLoginClick() },
+                        onClick = { if (!state.isLoading) viewModel.onLoginClick(onNavigate) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),

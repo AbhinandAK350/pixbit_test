@@ -2,8 +2,11 @@ package com.abhinand.pixbittest.login.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.abhinand.pixbittest.core.navigation.Action
+import com.abhinand.pixbittest.core.navigation.Screen
 import com.abhinand.pixbittest.core.network.NetworkResource
 import com.abhinand.pixbittest.login.domain.usecase.LoginUseCase
+import com.abhinand.pixbittest.login.domain.usecase.SaveTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +14,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase) : ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val loginUseCase: LoginUseCase,
+    private val saveTokenUseCase: SaveTokenUseCase,
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
@@ -36,7 +42,7 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
         _uiState.value = _uiState.value.copy(isPasswordVisible = !_uiState.value.isPasswordVisible)
     }
 
-    fun onLoginClick() {
+    fun onLoginClick(onNavigate: (Action) -> Unit) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
@@ -44,7 +50,13 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
                 loginUseCase(email = _uiState.value.email, password = _uiState.value.password)
 
             when (result) {
-                is NetworkResource.Success -> {}
+                is NetworkResource.Success -> {
+                    result.data?.token?.let {
+                        saveTokenUseCase(it)
+                        onNavigate(Action.Push(Screen.Home, clearStack = true))
+                    }
+                }
+
                 is NetworkResource.Error -> {
                     _uiState.value = _uiState.value.copy(errorMessage = result.message)
                 }
