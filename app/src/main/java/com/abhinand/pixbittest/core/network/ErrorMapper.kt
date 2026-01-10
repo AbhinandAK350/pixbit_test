@@ -7,11 +7,14 @@ import java.net.UnknownHostException
 
 fun Throwable.toNetworkError(): NetworkError =
     when (this) {
+        is UnknownHostException -> NetworkError.NoInternet
+
         is SocketTimeoutException -> NetworkError.Timeout
-        is UnknownHostException,
-        is ConnectException -> NetworkError.NoInternet
+
+        is ConnectException -> NetworkError.Server
 
         is HttpException -> NetworkError.Server
+
         else -> NetworkError.Unknown
     }
 
