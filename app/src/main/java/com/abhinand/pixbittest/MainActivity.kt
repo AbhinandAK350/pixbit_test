@@ -5,8 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abhinand.pixbittest.core.navigation.AppNavigation
 import com.abhinand.pixbittest.core.navigation.Screen
 import com.abhinand.pixbittest.core.theme.PixbitTestTheme
@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PixbitTestTheme {
-                val isLoggedIn by viewModel.isLoggedIn.collectAsState()
+                val isLoggedIn by viewModel.isLoggedIn.collectAsStateWithLifecycle()
                 isLoggedIn?.let {
                     if (it) {
                         AppNavigation(startDestination = Screen.Home)
