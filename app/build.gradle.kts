@@ -22,7 +22,7 @@ android {
 
         buildConfigField(
             "String", "API_URL",
-            "\"https://test.pixbit.in/api \""
+            "\"https://test.pixbit.in/api/\""
         )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
