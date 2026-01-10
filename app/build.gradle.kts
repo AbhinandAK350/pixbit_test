@@ -63,6 +63,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.androidx.hilt.viewmodel.compose)
 
+    implementation(libs.androidx.datastore.preferences)
+
     implementation(libs.dagger.hilt)
     ksp(libs.hilt.compiler)
 
