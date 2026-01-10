@@ -20,6 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -42,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.abhinand.pixbittest.R
-import com.abhinand.pixbittest.add_employee.presentation.components.PrimaryButton
 import com.abhinand.pixbittest.add_employee.presentation.components.StepIndicator
 import com.abhinand.pixbittest.core.theme.Container
 import com.abhinand.pixbittest.core.theme.Primary
@@ -70,7 +71,8 @@ fun BasicDetailsStep(
     onDesignationChange: (String) -> Unit,
     isDesignationDropdownOpen: Boolean,
     onDesignationDropdownOpenChange: (Boolean) -> Unit,
-    designationOptions: List<String>
+    designationOptions: List<String>,
+    isNextButtonEnabled: Boolean
 ) {
 
     val scrollState = rememberScrollState()
@@ -142,7 +144,17 @@ fun BasicDetailsStep(
 
         Spacer(modifier = Modifier.height(27.dp))
 
-        PrimaryButton(text = "Next", onClick = onNext)
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(53.dp),
+            onClick = { onNext() },
+            enabled = isNextButtonEnabled,
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Secondary)
+        ) {
+            Text(text = "Next", fontWeight = FontWeight.W500, fontSize = 16.sp)
+        }
 
         Spacer(modifier = Modifier.height(25.dp))
     }

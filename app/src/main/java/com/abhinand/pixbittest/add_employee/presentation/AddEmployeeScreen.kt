@@ -173,7 +173,8 @@ fun AddEmployeeScreen(
                         onDesignationChange = viewModel::onDesignationChange,
                         isDesignationDropdownOpen = state.isDesignationDropdownOpen,
                         onDesignationDropdownOpenChange = viewModel::onDesignationDropdownOpenChange,
-                        designationOptions = state.designationOptions
+                        designationOptions = state.designationOptions,
+                        isNextButtonEnabled = state.isNextButtonEnabled
                     )
                 }
 
