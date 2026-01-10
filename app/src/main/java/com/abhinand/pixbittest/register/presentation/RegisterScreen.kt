@@ -16,6 +16,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -102,8 +103,22 @@ fun RegisterScreen(
                         color = Color(0xFFB1B1B1)
                     )
                 },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Secondary,
+                    unfocusedBorderColor = Secondary,
+                    focusedLabelColor = Secondary,
+                    cursorColor = Secondary
+                ),
                 shape = RoundedCornerShape(10.dp)
             )
+
+            if (state.name.isNotEmpty() && !state.isNameValid) {
+                Text(
+                    text = "Name should only contain alphabets and white space",
+                    color = Color.Red,
+                    fontSize = 12.sp
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -132,8 +147,18 @@ fun RegisterScreen(
                         color = Color(0xFFB1B1B1)
                     )
                 },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Secondary,
+                    unfocusedBorderColor = Secondary,
+                    focusedLabelColor = Secondary,
+                    cursorColor = Secondary
+                ),
                 shape = RoundedCornerShape(10.dp)
             )
+
+            if (state.email.isNotEmpty() && !state.isEmailValid) {
+                Text(text = "Enter a valid email", color = Color.Red, fontSize = 12.sp)
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -171,9 +196,23 @@ fun RegisterScreen(
                         )
                     }
                 },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Secondary,
+                    unfocusedBorderColor = Secondary,
+                    focusedLabelColor = Secondary,
+                    cursorColor = Secondary
+                ),
                 visualTransformation = if (state.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 shape = RoundedCornerShape(10.dp)
             )
+
+            if (state.password.isNotEmpty() && !state.isPasswordValid) {
+                Text(
+                    text = "Password should contain atleast 5 characters",
+                    color = Color.Red,
+                    fontSize = 12.sp
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -217,9 +256,19 @@ fun RegisterScreen(
                         )
                     }
                 },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Secondary,
+                    unfocusedBorderColor = Secondary,
+                    focusedLabelColor = Secondary,
+                    cursorColor = Secondary
+                ),
                 visualTransformation = if (state.isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 shape = RoundedCornerShape(10.dp)
             )
+
+            if (state.confirmPassword.isNotEmpty() && !state.isConfirmPasswordValid) {
+                Text(text = "Password does not match", color = Color.Red, fontSize = 12.sp)
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
 
