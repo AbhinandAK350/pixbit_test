@@ -56,7 +56,7 @@ fun BasicDetailsStep(
     lastName: String,
     onLastNameChange: (String) -> Unit,
     dob: String,
-    onDobChange: (String) -> Unit,
+    onDatePickerClick: () -> Unit,
     gender: String,
     onGenderChange: (String) -> Unit,
     designation: String,
@@ -104,7 +104,7 @@ fun BasicDetailsStep(
         DatePickerField(
             label = "Date of Birth",
             value = dob,
-            onValueChange = onDobChange
+            onClick = onDatePickerClick
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -231,7 +231,7 @@ fun LabeledTextField(
 fun DatePickerField(
     label: String,
     value: String,
-    onValueChange: (String) -> Unit
+    onClick: () -> Unit
 ) {
     Column {
         Text(
@@ -245,33 +245,39 @@ fun DatePickerField(
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp),
-            readOnly = true,
-            trailingIcon = {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = null,
-                    tint = Color(0xFF2979FF)
+        Box {
+            OutlinedTextField(
+                value = value,
+                onValueChange = {},
+                modifier = Modifier.fillMaxWidth(),
+                enabled = false,
+                shape = RoundedCornerShape(10.dp),
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = null,
+                    )
+                },
+                textStyle = TextStyle(
+                    fontFamily = interRegular,
+                    fontWeight = FontWeight.W400,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.sp,
+                ),
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledTextColor = Primary,
+                    disabledContainerColor = Color.Transparent,
+                    disabledBorderColor = Secondary,
+                    disabledTrailingIconColor = Color(0xFF2979FF)
                 )
-            },
-            textStyle = TextStyle(
-                fontFamily = interRegular,
-                fontWeight = FontWeight.W400,
-                fontSize = 14.sp,
-                letterSpacing = 0.sp,
-            ),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Secondary,
-                unfocusedBorderColor = Secondary,
-                focusedLabelColor = Secondary,
-                cursorColor = Secondary,
-                errorBorderColor = Color.Red
             )
-        )
+
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clickable(onClick = onClick)
+            )
+        }
     }
 }
 

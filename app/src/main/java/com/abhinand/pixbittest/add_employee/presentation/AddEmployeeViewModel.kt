@@ -38,7 +38,11 @@ class AddEmployeeViewModel @Inject constructor() : ViewModel() {
         _uiState.update { it.copy(gender = gender) }
     }
 
-    fun onMaritalStatusChange(status: String) {
-        _uiState.update { it.copy(maritalStatus = status) }
+    fun onDesignationChange(designation: String) {
+        _uiState.update { it.copy(designation = designation) }
+    }
+
+    fun onShowDatePickerChange(show: Boolean) {
+        _uiState.update { it.copy(showDatePicker = show) }
     }
 }
