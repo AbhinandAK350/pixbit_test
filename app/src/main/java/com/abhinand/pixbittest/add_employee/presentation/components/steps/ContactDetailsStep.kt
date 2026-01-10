@@ -14,12 +14,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.abhinand.pixbittest.R
 import com.abhinand.pixbittest.add_employee.presentation.components.PrimaryButton
 import com.abhinand.pixbittest.add_employee.presentation.components.StepIndicator
 import com.abhinand.pixbittest.core.theme.Secondary
@@ -37,17 +35,17 @@ fun ContactDetailsStep(onNext: () -> Unit) {
 
         Spacer(modifier = Modifier.height(27.dp))
 
-        LabeledTextField(
-            label = "Mobile Number",
-            placeholder = stringResource(R.string.enter_mobile_number)
-        )
+//        LabeledTextField(
+//            label = "Mobile Number",
+//            placeholder = stringResource(R.string.enter_mobile_number)
+//        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        LabeledTextField(
-            label = "Email",
-            placeholder = stringResource(R.string.enter_email_address)
-        )
+//        LabeledTextField(
+//            label = "Email",
+//            placeholder = stringResource(R.string.enter_email_address)
+//        )
 
         Spacer(modifier = Modifier.height(16.dp))
 

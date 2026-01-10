@@ -1,6 +1,9 @@
 package com.abhinand.pixbittest.add_employee.presentation
 
+import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -45,6 +48,11 @@ fun AddEmployeeScreen(
 ) {
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        viewModel.onProfileImageChange(uri)
+    }
 
     BackHandler {
         when (state.currentStep) {
@@ -100,7 +108,19 @@ fun AddEmployeeScreen(
             when (state.currentStep) {
                 AddEmployeeStep.BASIC_DETAILS -> {
                     BasicDetailsStep(
-                        onNext = { viewModel.onCurrentStepChange(AddEmployeeStep.CONTACT_DETAILS) }
+                        imageUri = state.profileImage,
+                        onImageClick = { imagePickerLauncher.launch("image/*") },
+                        onNext = { viewModel.onCurrentStepChange(AddEmployeeStep.CONTACT_DETAILS) },
+                        firstName = state.firstName,
+                        onFirstNameChange = viewModel::onFirstNameChange,
+                        lastName = state.lastName,
+                        onLastNameChange = viewModel::onLastNameChange,
+                        dob = state.dob,
+                        onDobChange = viewModel::onDobChange,
+                        gender = state.gender,
+                        onGenderChange = viewModel::onGenderChange,
+                        maritalStatus = state.maritalStatus,
+                        onMaritalStatusChange = viewModel::onMaritalStatusChange
                     )
                 }
 

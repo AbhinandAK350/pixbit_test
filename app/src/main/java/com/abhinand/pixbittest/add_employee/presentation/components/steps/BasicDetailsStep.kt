@@ -1,8 +1,10 @@
 package com.abhinand.pixbittest.add_employee.presentation.components.steps
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +23,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,16 +33,35 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.abhinand.pixbittest.R
 import com.abhinand.pixbittest.add_employee.presentation.components.PrimaryButton
 import com.abhinand.pixbittest.add_employee.presentation.components.StepIndicator
+import com.abhinand.pixbittest.core.theme.Primary
 import com.abhinand.pixbittest.core.theme.Secondary
+import com.abhinand.pixbittest.core.theme.interRegular
+import com.abhinand.pixbittest.core.theme.interSemiBold
 
 @Composable
-fun BasicDetailsStep(onNext: () -> Unit) {
+fun BasicDetailsStep(
+    imageUri: Uri?,
+    onImageClick: () -> Unit,
+    onNext: () -> Unit,
+    firstName: String,
+    onFirstNameChange: (String) -> Unit,
+    lastName: String,
+    onLastNameChange: (String) -> Unit,
+    dob: String,
+    onDobChange: (String) -> Unit,
+    gender: String,
+    onGenderChange: (String) -> Unit,
+    maritalStatus: String,
+    onMaritalStatusChange: (String) -> Unit
+) {
 
     val scrollState = rememberScrollState()
 
@@ -54,27 +76,53 @@ fun BasicDetailsStep(onNext: () -> Unit) {
 
         Spacer(modifier = Modifier.height(27.dp))
 
-        ProfileImagePicker()
+        ProfileImagePicker(
+            imageUri = imageUri,
+            onImageClick = onImageClick
+        )
 
         Spacer(modifier = Modifier.height(27.dp))
 
-        LabeledTextField(label = "First Name", placeholder = stringResource(R.string.enter_name))
+        LabeledTextField(
+            label = "First Name",
+            placeholder = stringResource(R.string.enter_name),
+            value = firstName,
+            onValueChange = onFirstNameChange
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        LabeledTextField(label = "Last Name", placeholder = stringResource(R.string.enter_name))
+        LabeledTextField(
+            label = "Last Name",
+            placeholder = stringResource(R.string.enter_name),
+            value = lastName,
+            onValueChange = onLastNameChange
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        DatePickerField(label = "Date of Birth", value = "01/01/2000")
+        DatePickerField(
+            label = "Date of Birth",
+            value = dob,
+            onValueChange = onDobChange
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        DropdownField(label = "Gender", placeholder = "Select Gender")
-
+        DropdownField(
+            label = "Designation",
+            placeholder = "Select One",
+            value = maritalStatus,
+            onValueChange = onMaritalStatusChange
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
-        DropdownField(label = "Marital Status", placeholder = "Select Marital Status")
+        DropdownField(
+            label = "Gender",
+            placeholder = "Select One",
+            value = gender,
+            onValueChange = onGenderChange
+        )
 
         Spacer(modifier = Modifier.height(27.dp))
 
@@ -85,36 +133,35 @@ fun BasicDetailsStep(onNext: () -> Unit) {
 }
 
 @Composable
-fun ProfileImagePicker() {
+fun ProfileImagePicker(
+    imageUri: Uri?,
+    onImageClick: () -> Unit
+) {
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
-        Box(
+        AsyncImage(
+            model = imageUri ?: R.drawable.img_employee_placeholder,
+            contentDescription = "Profile Image",
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(125.dp)
-                .clip(CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(R.drawable.img_employee_placeholder),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.size(125.dp)
-            )
-        }
+                .clip(CircleShape)
+        )
 
         Box(
             modifier = Modifier
                 .offset(x = 44.dp, y = 44.dp)
                 .size(44.dp)
                 .clip(CircleShape)
-                .background(Color(0xFFE9F3FF)),
+                .background(Color(0xFFE9F3FF))
+                .clickable { onImageClick() },
             contentAlignment = Alignment.Center
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_edit),
-                contentDescription = null,
+                contentDescription = "Edit Profile Image",
                 modifier = Modifier.size(44.dp)
             )
         }
@@ -124,22 +171,41 @@ fun ProfileImagePicker() {
 @Composable
 fun LabeledTextField(
     label: String,
-    placeholder: String
+    placeholder: String,
+    value: String,
+    onValueChange: (String) -> Unit
 ) {
     Column {
         Text(
             text = label,
             fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color(0xFF1A1A1A)
+            fontWeight = FontWeight.W600,
+            fontFamily = interSemiBold,
+            letterSpacing = 0.sp,
+            color = Primary
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
-            placeholder = { Text(placeholder) },
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = {
+                Text(
+                    placeholder,
+                    fontFamily = interRegular,
+                    fontWeight = FontWeight.W400,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.sp,
+                    color = Color(0xFFB1B1B1)
+                )
+            },
+            textStyle = TextStyle(
+                fontFamily = interRegular,
+                fontWeight = FontWeight.W400,
+                fontSize = 14.sp,
+                letterSpacing = 0.sp,
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
@@ -149,7 +215,14 @@ fun LabeledTextField(
                     shape = RoundedCornerShape(10.dp)
                 ),
             shape = RoundedCornerShape(10.dp),
-            singleLine = true
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Secondary,
+                unfocusedBorderColor = Secondary,
+                focusedLabelColor = Secondary,
+                cursorColor = Secondary,
+                errorBorderColor = Color.Red
+            )
         )
     }
 }
@@ -157,20 +230,24 @@ fun LabeledTextField(
 @Composable
 fun DatePickerField(
     label: String,
-    value: String
+    value: String,
+    onValueChange: (String) -> Unit
 ) {
     Column {
         Text(
             text = label,
             fontSize = 14.sp,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.W600,
+            fontFamily = interSemiBold,
+            letterSpacing = 0.sp,
+            color = Primary
         )
 
         Spacer(modifier = Modifier.height(6.dp))
 
         OutlinedTextField(
             value = value,
-            onValueChange = {},
+            onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp),
             readOnly = true,
@@ -180,7 +257,20 @@ fun DatePickerField(
                     contentDescription = null,
                     tint = Color(0xFF2979FF)
                 )
-            }
+            },
+            textStyle = TextStyle(
+                fontFamily = interRegular,
+                fontWeight = FontWeight.W400,
+                fontSize = 14.sp,
+                letterSpacing = 0.sp,
+            ),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Secondary,
+                unfocusedBorderColor = Secondary,
+                focusedLabelColor = Secondary,
+                cursorColor = Secondary,
+                errorBorderColor = Color.Red
+            )
         )
     }
 }
@@ -188,23 +278,37 @@ fun DatePickerField(
 @Composable
 fun DropdownField(
     label: String,
-    placeholder: String
+    placeholder: String,
+    value: String,
+    onValueChange: (String) -> Unit
 ) {
     Column {
         Text(
             text = label,
             fontSize = 14.sp,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.W600,
+            fontFamily = interSemiBold,
+            letterSpacing = 0.sp,
+            color = Primary
         )
 
         Spacer(modifier = Modifier.height(6.dp))
 
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = value,
+            onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp),
-            placeholder = { Text(placeholder) },
+            placeholder = {
+                Text(
+                    placeholder,
+                    fontFamily = interRegular,
+                    fontWeight = FontWeight.W400,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.sp,
+                    color = Color(0xFFB1B1B1)
+                )
+            },
             readOnly = true,
             trailingIcon = {
                 Icon(
@@ -212,7 +316,20 @@ fun DropdownField(
                     contentDescription = null,
                     tint = Color(0xFF2979FF)
                 )
-            }
+            },
+            textStyle = TextStyle(
+                fontFamily = interRegular,
+                fontWeight = FontWeight.W400,
+                fontSize = 14.sp,
+                letterSpacing = 0.sp,
+            ),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Secondary,
+                unfocusedBorderColor = Secondary,
+                focusedLabelColor = Secondary,
+                cursorColor = Secondary,
+                errorBorderColor = Color.Red
+            )
         )
     }
 }
