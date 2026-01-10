@@ -10,5 +10,5 @@ data class AddEmployeeUiState(
     val lastName: String = "",
     val dob: String = Util.getTodayDate(),
     val gender: String = "",
-    val maritalStatus: String = ""
+    val designation: String = ""
 )

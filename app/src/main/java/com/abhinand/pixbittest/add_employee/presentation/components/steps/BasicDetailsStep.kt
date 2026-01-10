@@ -59,8 +59,8 @@ fun BasicDetailsStep(
     onDobChange: (String) -> Unit,
     gender: String,
     onGenderChange: (String) -> Unit,
-    maritalStatus: String,
-    onMaritalStatusChange: (String) -> Unit
+    designation: String,
+    onDesignationChange: (String) -> Unit
 ) {
 
     val scrollState = rememberScrollState()
@@ -112,8 +112,8 @@ fun BasicDetailsStep(
         DropdownField(
             label = "Designation",
             placeholder = "Select One",
-            value = maritalStatus,
-            onValueChange = onMaritalStatusChange
+            value = designation,
+            onValueChange = onDesignationChange
         )
         Spacer(modifier = Modifier.height(16.dp))
 

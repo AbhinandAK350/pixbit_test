@@ -119,8 +119,8 @@ fun AddEmployeeScreen(
                         onDobChange = viewModel::onDobChange,
                         gender = state.gender,
                         onGenderChange = viewModel::onGenderChange,
-                        maritalStatus = state.maritalStatus,
-                        onMaritalStatusChange = viewModel::onMaritalStatusChange
+                        designation = state.designation,
+                        onDesignationChange = viewModel::onMaritalStatusChange
                     )
                 }
 
