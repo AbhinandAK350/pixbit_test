@@ -1,6 +1,10 @@
 package com.abhinand.pixbittest.register.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.abhinand.pixbittest.core.network.NetworkResource
+import com.abhinand.pixbittest.register.domain.usecase.RegisterUseCase
 import com.abhinand.pixbittest.register.domain.valueobject.Email
 import com.abhinand.pixbittest.register.domain.valueobject.Name
 import com.abhinand.pixbittest.register.domain.valueobject.Password
@@ -8,10 +12,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RegisterViewModel @Inject constructor() : ViewModel() {
+class RegisterViewModel @Inject constructor(private val registerUseCase: RegisterUseCase) :
+    ViewModel() {
 
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState = _uiState.asStateFlow()
@@ -90,7 +96,26 @@ class RegisterViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onRegisterButtonClick() {
-        // TODO: Implement registration logic
+        viewModelScope.launch {
+
+            _uiState.update { it.copy(isLoading = true) }
+
+            val result = registerUseCase(
+                name = _uiState.value.name,
+                email = _uiState.value.email,
+                password = _uiState.value.password,
+                confirmPassword = _uiState.value.confirmPassword
+            )
+
+            _uiState.update { it.copy(isLoading = false) }
+
+            when (result) {
+                is NetworkResource.Success -> {}
+                is NetworkResource.Error -> {
+                    Log.e("RegisterViewModel", "Registration failed: ${result.message}")
+                }
+            }
+        }
     }
 
     private fun updateRegisterButtonState() {
