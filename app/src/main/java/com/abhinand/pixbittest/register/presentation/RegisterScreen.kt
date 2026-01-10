@@ -1,6 +1,5 @@
 package com.abhinand.pixbittest.register.presentation
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +23,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -88,14 +88,15 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = state.name,
                 onValueChange = { viewModel.onNameChange(it) },
+                isError = !state.isNameValid && state.nameTouched,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
-                    .border(
-                        width = 0.5.dp,
-                        color = Secondary,
-                        shape = RoundedCornerShape(10.dp)
-                    ),
+                    .onFocusChanged { focusState ->
+                        if (!focusState.isFocused && state.name.isNotEmpty()) {
+                            viewModel.onNameFocusLost()
+                        }
+                    },
                 placeholder = {
                     Text(
                         stringResource(R.string.enter_name),
@@ -107,12 +108,13 @@ fun RegisterScreen(
                     focusedBorderColor = Secondary,
                     unfocusedBorderColor = Secondary,
                     focusedLabelColor = Secondary,
-                    cursorColor = Secondary
+                    cursorColor = Secondary,
+                    errorBorderColor = Color.Red
                 ),
                 shape = RoundedCornerShape(10.dp)
             )
 
-            if (state.name.isNotEmpty() && !state.isNameValid) {
+            if (!state.isNameValid && state.nameTouched) {
                 Text(
                     text = "Name should only contain alphabets and white space",
                     color = Color.Red,
@@ -132,14 +134,15 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = state.email,
                 onValueChange = { viewModel.onEmailChange(it) },
+                isError = !state.isEmailValid && state.emailTouched,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
-                    .border(
-                        width = 0.5.dp,
-                        color = Secondary,
-                        shape = RoundedCornerShape(10.dp)
-                    ),
+                    .onFocusChanged { focusState ->
+                        if (!focusState.isFocused && state.email.isNotEmpty()) {
+                            viewModel.onEmailFocusLost()
+                        }
+                    },
                 placeholder = {
                     Text(
                         stringResource(R.string.enter_mail_address),
@@ -151,12 +154,13 @@ fun RegisterScreen(
                     focusedBorderColor = Secondary,
                     unfocusedBorderColor = Secondary,
                     focusedLabelColor = Secondary,
-                    cursorColor = Secondary
+                    cursorColor = Secondary,
+                    errorBorderColor = Color.Red
                 ),
                 shape = RoundedCornerShape(10.dp)
             )
 
-            if (state.email.isNotEmpty() && !state.isEmailValid) {
+            if (!state.isEmailValid && state.emailTouched) {
                 Text(text = "Enter a valid email", color = Color.Red, fontSize = 12.sp)
             }
 
@@ -167,14 +171,15 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = state.password,
                 onValueChange = { viewModel.onPasswordChange(it) },
+                isError = !state.isPasswordValid && state.passwordTouched,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
-                    .border(
-                        width = 0.5.dp,
-                        color = Secondary,
-                        shape = RoundedCornerShape(10.dp)
-                    ),
+                    .onFocusChanged { focusState ->
+                        if (!focusState.isFocused && state.password.isNotEmpty()) {
+                            viewModel.onPasswordFocusLost()
+                        }
+                    },
                 placeholder = {
                     Text(
                         stringResource(R.string.enter_password),
@@ -200,15 +205,16 @@ fun RegisterScreen(
                     focusedBorderColor = Secondary,
                     unfocusedBorderColor = Secondary,
                     focusedLabelColor = Secondary,
-                    cursorColor = Secondary
+                    cursorColor = Secondary,
+                    errorBorderColor = Color.Red
                 ),
                 visualTransformation = if (state.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 shape = RoundedCornerShape(10.dp)
             )
 
-            if (state.password.isNotEmpty() && !state.isPasswordValid) {
+            if (!state.isPasswordValid && state.passwordTouched) {
                 Text(
-                    text = "Password should contain atleast 5 characters",
+                    text = "Password must be at least 5 characters and include uppercase, lowercase, a number, and one special character (@ ! ? _)",
                     color = Color.Red,
                     fontSize = 12.sp
                 )
@@ -227,14 +233,15 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = state.confirmPassword,
                 onValueChange = { viewModel.onConfirmPasswordChange(it) },
+                isError = !state.isConfirmPasswordValid && state.confirmPasswordTouched,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
-                    .border(
-                        width = 0.5.dp,
-                        color = Secondary,
-                        shape = RoundedCornerShape(10.dp)
-                    ),
+                    .onFocusChanged { focusState ->
+                        if (!focusState.isFocused && state.confirmPassword.isNotEmpty()) {
+                            viewModel.onConfirmPasswordFocusLost()
+                        }
+                    },
                 placeholder = {
                     Text(
                         stringResource(R.string.enter_password),
@@ -260,13 +267,14 @@ fun RegisterScreen(
                     focusedBorderColor = Secondary,
                     unfocusedBorderColor = Secondary,
                     focusedLabelColor = Secondary,
-                    cursorColor = Secondary
+                    cursorColor = Secondary,
+                    errorBorderColor = Color.Red
                 ),
                 visualTransformation = if (state.isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 shape = RoundedCornerShape(10.dp)
             )
 
-            if (state.confirmPassword.isNotEmpty() && !state.isConfirmPasswordValid) {
+            if (!state.isConfirmPasswordValid && state.confirmPasswordTouched) {
                 Text(text = "Password does not match", color = Color.Red, fontSize = 12.sp)
             }
 

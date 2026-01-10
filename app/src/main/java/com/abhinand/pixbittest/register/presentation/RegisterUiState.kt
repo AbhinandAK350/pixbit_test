@@ -12,8 +12,13 @@ data class RegisterUiState(
     val isPasswordVisible: Boolean = false,
     val isConfirmPasswordVisible: Boolean = false,
 
-    val isNameValid: Boolean = false,
-    val isEmailValid: Boolean = false,
-    val isPasswordValid: Boolean = false,
-    val isConfirmPasswordValid: Boolean = false
+    val isNameValid: Boolean = true,
+    val isEmailValid: Boolean = true,
+    val isPasswordValid: Boolean = true,
+    val isConfirmPasswordValid: Boolean = true,
+
+    val nameTouched: Boolean = false,
+    val emailTouched: Boolean = false,
+    val passwordTouched: Boolean = false,
+    val confirmPasswordTouched: Boolean = false
 )
