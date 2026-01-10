@@ -3,6 +3,7 @@ package com.abhinand.pixbittest.home.presentation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -80,40 +81,51 @@ fun HomeScreen(
 
         if (uiState.isLoading && uiState.employees.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = Secondary)
             }
-        }
-
-        LazyColumn(
-            state = listState,
-            modifier = modifier.padding(top = contentPadding.calculateTopPadding()),
-            contentPadding = PaddingValues(vertical = 15.dp)
-        ) {
-
-            items(uiState.employees) {
-                EmployeeItem(employeeImageUrl = "https://picsum.photos/200", onItemClick = {
-                    onNavigate(Action.Push(Screen.ProfileDetails("0")))
-                })
+        } else if (!uiState.isLoading && uiState.error != null) {
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(contentPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(uiState.error ?: "Unknown error occurred")
             }
+        } else {
+            LazyColumn(
+                state = listState,
+                modifier = modifier.padding(top = contentPadding.calculateTopPadding()),
+                contentPadding = PaddingValues(vertical = 15.dp)
+            ) {
 
-            item {
-                if (uiState.isLoading) {
-                    Box(
-                        modifier = Modifier.fillParentMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
+                items(uiState.employees) { employee ->
+                    EmployeeItem(employeeImageUrl = "", onItemClick = {
+                        onNavigate(Action.Push(Screen.ProfileDetails("00")))
+                    })
+                }
+
+                item {
+                    if (uiState.isLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
                     }
                 }
-            }
 
+            }
         }
 
         LaunchedEffect(listState.layoutInfo) {
             val lastVisibleItemIndex =
                 listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
             val totalItemsCount = listState.layoutInfo.totalItemsCount
-            if (lastVisibleItemIndex >= totalItemsCount - 1 && !uiState.isLoading && !uiState.endReached) {
+            if (totalItemsCount > 0 && lastVisibleItemIndex >= totalItemsCount - 1 && !uiState.isLoading && !uiState.endReached) {
                 viewModel.fetchEmployeeList()
             }
         }

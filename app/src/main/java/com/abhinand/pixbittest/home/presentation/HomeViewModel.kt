@@ -28,7 +28,11 @@ class HomeViewModel @Inject constructor(private val getEmployeeListUseCase: GetE
 
             _uiState.update { it.copy(isLoading = true) }
 
-            when (val result = getEmployeeListUseCase(_uiState.value.page)) {
+            val result = getEmployeeListUseCase(_uiState.value.page)
+
+            _uiState.update { it.copy(isLoading = false) }
+
+            when (result) {
                 is NetworkResource.Success -> {
                     _uiState.update {
                         it.copy(
@@ -43,8 +47,7 @@ class HomeViewModel @Inject constructor(private val getEmployeeListUseCase: GetE
                 is NetworkResource.Error -> {
                     _uiState.update {
                         it.copy(
-                            error = result.message,
-                            isLoading = false
+                            error = result.message
                         )
                     }
                 }
