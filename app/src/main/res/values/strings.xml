@@ -22,4 +22,6 @@
     <string name="remarks">Remarks</string>
     <string name="payment_date">Payment Date</string>
     <string name="payment_amount">Payment Amount (%1$s)</string>
+    <string name="error">Error</string>
+    <string name="ok">OK</string>
 </resources>

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -19,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -50,6 +52,20 @@ fun RegisterScreen(
 ) {
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    if (state.errorMessage != null) {
+        AlertDialog(
+            containerColor = Color(0xFFFBFDFF),
+            onDismissRequest = { viewModel.dismissErrorDialog() },
+            title = { Text(text = stringResource(R.string.error), color = Primary) },
+            text = { Text(text = state.errorMessage!!) },
+            confirmButton = {
+                TextButton(onClick = { viewModel.dismissErrorDialog() }) {
+                    Text(stringResource(R.string.ok), color = Secondary)
+                }
+            }
+        )
+    }
 
     Scaffold(topBar = {
         TopAppBar(
@@ -287,27 +303,27 @@ fun RegisterScreen(
                     .fillMaxWidth()
                     .height(50.dp),
                 enabled = state.isRegisterButtonEnabled,
-                shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Secondary
-                )
+                    containerColor = Secondary,
+                    disabledContainerColor = Color(0xFFE2E2E2)
+                ),
+                shape = RoundedCornerShape(10.dp)
             ) {
                 if (state.isLoading) {
                     CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
                         strokeWidth = 3.dp,
+                        modifier = Modifier.size(24.dp),
                         color = Color.White
                     )
                 } else {
                     Text(
-                        text = stringResource(R.string.register), letterSpacing = 0.sp,
+                        stringResource(R.string.register),
                         color = Color.White,
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.W600
                     )
                 }
             }
         }
     }
-
 }

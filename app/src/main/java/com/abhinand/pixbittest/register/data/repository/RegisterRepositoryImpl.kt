@@ -1,7 +1,10 @@
 package com.abhinand.pixbittest.register.data.repository
 
+import android.util.Log
 import com.abhinand.pixbittest.core.network.NetworkResource
 import com.abhinand.pixbittest.core.network.NetworkUtils
+import com.abhinand.pixbittest.core.network.toNetworkError
+import com.abhinand.pixbittest.core.network.toUserMessage
 import com.abhinand.pixbittest.register.data.remote.api.RegisterApi
 import com.abhinand.pixbittest.register.data.remote.dto.RegisterRequest
 import com.abhinand.pixbittest.register.domain.repository.RegisterRepository
@@ -23,7 +26,9 @@ class RegisterRepositoryImpl @Inject constructor(
                 NetworkResource.Error("Registration failed")
             }
         } catch (e: Exception) {
-            NetworkResource.Error(e.message ?: "An unknown error occurred")
+            Log.e("RegisterRepositoryImpl", "register: ", e)
+            val error = e.toNetworkError()
+            NetworkResource.Error(error.toUserMessage())
         }
     }
 }

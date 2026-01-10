@@ -1,6 +1,5 @@
 package com.abhinand.pixbittest.register.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abhinand.pixbittest.core.network.NetworkResource
@@ -112,10 +111,14 @@ class RegisterViewModel @Inject constructor(private val registerUseCase: Registe
             when (result) {
                 is NetworkResource.Success -> {}
                 is NetworkResource.Error -> {
-                    Log.e("RegisterViewModel", "Registration failed: ${result.message}")
+                    _uiState.update { it.copy(errorMessage = result.message) }
                 }
             }
         }
+    }
+
+    fun dismissErrorDialog() {
+        _uiState.update { it.copy(errorMessage = null) }
     }
 
     private fun updateRegisterButtonState() {

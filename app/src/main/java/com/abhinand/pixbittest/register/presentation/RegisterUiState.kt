@@ -20,5 +20,7 @@ data class RegisterUiState(
     val nameTouched: Boolean = false,
     val emailTouched: Boolean = false,
     val passwordTouched: Boolean = false,
-    val confirmPasswordTouched: Boolean = false
+    val confirmPasswordTouched: Boolean = false,
+
+    val errorMessage: String? = null
 )
