@@ -1,13 +1,14 @@
 package com.abhinand.pixbittest.add_employee.presentation
 
 import android.net.Uri
+import com.abhinand.pixbittest.core.utils.Util
 
 data class AddEmployeeUiState(
     val currentStep: AddEmployeeStep = AddEmployeeStep.BASIC_DETAILS,
     val profileImage: Uri? = null,
     val firstName: String = "",
     val lastName: String = "",
-    val dob: String = "",
+    val dob: String = Util.getTodayDate(),
     val gender: String = "",
     val maritalStatus: String = ""
 )
