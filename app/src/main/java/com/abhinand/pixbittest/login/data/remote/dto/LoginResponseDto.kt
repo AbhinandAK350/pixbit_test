@@ -1,3 +1,10 @@
 package com.abhinand.pixbittest.login.data.remote.dto
 
-data class LoginResponseDto(val token: String? = null)
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class LoginResponseDto(
+    val success: Boolean,
+    val message: String? = null,
+    val token: String? = null
+)

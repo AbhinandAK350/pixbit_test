@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -20,7 +19,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -38,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abhinand.pixbittest.R
+import com.abhinand.pixbittest.core.components.ErrorAlert
 import com.abhinand.pixbittest.core.navigation.Action
 import com.abhinand.pixbittest.core.theme.Container
 import com.abhinand.pixbittest.core.theme.Primary
@@ -54,17 +53,7 @@ fun RegisterScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     if (state.errorMessage != null) {
-        AlertDialog(
-            containerColor = Color(0xFFFBFDFF),
-            onDismissRequest = { viewModel.dismissErrorDialog() },
-            title = { Text(text = stringResource(R.string.error), color = Primary) },
-            text = { Text(text = state.errorMessage!!) },
-            confirmButton = {
-                TextButton(onClick = { viewModel.dismissErrorDialog() }) {
-                    Text(stringResource(R.string.ok), color = Secondary)
-                }
-            }
-        )
+        ErrorAlert(state.errorMessage ?: "Unknown error") { viewModel.dismissErrorDialog() }
     }
 
     Scaffold(topBar = {

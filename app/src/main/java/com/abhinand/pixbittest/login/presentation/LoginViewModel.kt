@@ -1,15 +1,19 @@
 package com.abhinand.pixbittest.login.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.abhinand.pixbittest.core.network.NetworkResource
+import com.abhinand.pixbittest.login.domain.usecase.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor() : ViewModel() {
+class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase) : ViewModel() {
 
-    val _uiState = MutableStateFlow(LoginUiState())
+    private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
 
     private fun checkLoginButtonEnabled() {
@@ -33,6 +37,25 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onLoginClick() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+
+            val result =
+                loginUseCase(email = _uiState.value.email, password = _uiState.value.password)
+
+            when (result) {
+                is NetworkResource.Success -> {}
+                is NetworkResource.Error -> {
+                    _uiState.value = _uiState.value.copy(errorMessage = result.message)
+                }
+            }
+
+            _uiState.value = _uiState.value.copy(isLoading = false)
+        }
+    }
+
+    fun dismissErrorDialog() {
+        _uiState.value = _uiState.value.copy(errorMessage = null)
     }
 
 }

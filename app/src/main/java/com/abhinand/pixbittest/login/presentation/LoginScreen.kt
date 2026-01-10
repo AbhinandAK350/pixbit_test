@@ -15,6 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abhinand.pixbittest.R
+import com.abhinand.pixbittest.core.components.ErrorAlert
 import com.abhinand.pixbittest.core.navigation.Action
 import com.abhinand.pixbittest.core.navigation.Screen
 import com.abhinand.pixbittest.core.theme.interMedium
@@ -52,6 +54,10 @@ fun LoginScreen(
 ) {
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    if (state.errorMessage != null) {
+        ErrorAlert(state.errorMessage ?: "Unknown error") { viewModel.dismissErrorDialog() }
+    }
 
     Scaffold(containerColor = Color(0xFFFBFDFF)) { contentPadding ->
 
@@ -177,7 +183,7 @@ fun LoginScreen(
                     Spacer(modifier = Modifier.height(32.dp))
 
                     Button(
-                        onClick = { viewModel.onLoginClick() },
+                        onClick = { if (!state.isLoading) viewModel.onLoginClick() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
@@ -187,12 +193,20 @@ fun LoginScreen(
                             containerColor = Color(0xFF3485D1)
                         )
                     ) {
-                        Text(
-                            text = stringResource(R.string.sign_in),
-                            color = Color.White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W500
-                        )
+                        if (state.isLoading) {
+                            CircularProgressIndicator(
+                                strokeWidth = 3.dp,
+                                modifier = Modifier.size(24.dp),
+                                color = Color.White
+                            )
+                        } else {
+                            Text(
+                                text = stringResource(R.string.sign_in),
+                                color = Color.White,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.W500
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))

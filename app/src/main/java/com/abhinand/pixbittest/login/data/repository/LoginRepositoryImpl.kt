@@ -1,13 +1,36 @@
 package com.abhinand.pixbittest.login.data.repository
 
+import android.util.Log
 import com.abhinand.pixbittest.core.network.NetworkResource
+import com.abhinand.pixbittest.core.network.NetworkUtils
+import com.abhinand.pixbittest.core.network.toNetworkError
+import com.abhinand.pixbittest.core.network.toUserMessage
+import com.abhinand.pixbittest.login.data.mapper.toDomain
+import com.abhinand.pixbittest.login.data.remote.LoginApi
 import com.abhinand.pixbittest.login.data.remote.dto.LoginRequest
 import com.abhinand.pixbittest.login.domain.model.Login
 import com.abhinand.pixbittest.login.domain.repository.LoginRepository
 import javax.inject.Inject
 
-class LoginRepositoryImpl @Inject constructor() : LoginRepository {
+class LoginRepositoryImpl @Inject constructor(
+    private val api: LoginApi,
+    private val networkUtils: NetworkUtils
+) : LoginRepository {
     override suspend fun login(loginRequest: LoginRequest): NetworkResource<Login> {
-        TODO()
+        if (!networkUtils.isNetworkAvailable()) {
+            return NetworkResource.Error("No internet connection")
+        }
+        return try {
+            val response = api.login(loginRequest)
+            if (response.success) {
+                NetworkResource.Success(response.toDomain())
+            } else {
+                NetworkResource.Error("Registration failed")
+            }
+        } catch (e: Exception) {
+            Log.e("RegisterRepositoryImpl", "register: ", e)
+            val error = e.toNetworkError()
+            NetworkResource.Error(error.toUserMessage())
+        }
     }
 }
