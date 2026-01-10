@@ -35,14 +35,22 @@ class AddEmployeeViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onGenderChange(gender: String) {
-        _uiState.update { it.copy(gender = gender) }
+        _uiState.update { it.copy(gender = gender, isGenderDropdownOpen = false) }
     }
 
     fun onDesignationChange(designation: String) {
-        _uiState.update { it.copy(designation = designation) }
+        _uiState.update { it.copy(designation = designation, isDesignationDropdownOpen = false) }
     }
 
     fun onShowDatePickerChange(show: Boolean) {
         _uiState.update { it.copy(showDatePicker = show) }
+    }
+
+    fun onGenderDropdownOpenChange(isOpen: Boolean) {
+        _uiState.update { it.copy(isGenderDropdownOpen = isOpen) }
+    }
+
+    fun onDesignationDropdownOpenChange(isOpen: Boolean) {
+        _uiState.update { it.copy(isDesignationDropdownOpen = isOpen) }
     }
 }

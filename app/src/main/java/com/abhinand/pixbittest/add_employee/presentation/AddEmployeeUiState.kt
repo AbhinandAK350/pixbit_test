@@ -10,6 +10,10 @@ data class AddEmployeeUiState(
     val lastName: String = "",
     val dob: String = Util.getTodayDate(),
     val gender: String = "",
+    val isGenderDropdownOpen: Boolean = false,
+    val genderOptions: List<String> = listOf("Male", "Female", "Other"),
     val designation: String = "",
+    val isDesignationDropdownOpen: Boolean = false,
+    val designationOptions: List<String> = listOf("Designer", "Developer", "QA"),
     val showDatePicker: Boolean = false
 )

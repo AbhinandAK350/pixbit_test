@@ -166,8 +166,14 @@ fun AddEmployeeScreen(
                         onDatePickerClick = { viewModel.onShowDatePickerChange(true) },
                         gender = state.gender,
                         onGenderChange = viewModel::onGenderChange,
+                        isGenderDropdownOpen = state.isGenderDropdownOpen,
+                        onGenderDropdownOpenChange = viewModel::onGenderDropdownOpenChange,
+                        genderOptions = state.genderOptions,
                         designation = state.designation,
-                        onDesignationChange = viewModel::onDesignationChange
+                        onDesignationChange = viewModel::onDesignationChange,
+                        isDesignationDropdownOpen = state.isDesignationDropdownOpen,
+                        onDesignationDropdownOpenChange = viewModel::onDesignationDropdownOpenChange,
+                        designationOptions = state.designationOptions
                     )
                 }
 

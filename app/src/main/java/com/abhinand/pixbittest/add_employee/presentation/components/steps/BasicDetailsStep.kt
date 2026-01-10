@@ -20,7 +20,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -41,6 +44,7 @@ import coil.compose.AsyncImage
 import com.abhinand.pixbittest.R
 import com.abhinand.pixbittest.add_employee.presentation.components.PrimaryButton
 import com.abhinand.pixbittest.add_employee.presentation.components.StepIndicator
+import com.abhinand.pixbittest.core.theme.Container
 import com.abhinand.pixbittest.core.theme.Primary
 import com.abhinand.pixbittest.core.theme.Secondary
 import com.abhinand.pixbittest.core.theme.interRegular
@@ -59,8 +63,14 @@ fun BasicDetailsStep(
     onDatePickerClick: () -> Unit,
     gender: String,
     onGenderChange: (String) -> Unit,
+    isGenderDropdownOpen: Boolean,
+    onGenderDropdownOpenChange: (Boolean) -> Unit,
+    genderOptions: List<String>,
     designation: String,
-    onDesignationChange: (String) -> Unit
+    onDesignationChange: (String) -> Unit,
+    isDesignationDropdownOpen: Boolean,
+    onDesignationDropdownOpenChange: (Boolean) -> Unit,
+    designationOptions: List<String>
 ) {
 
     val scrollState = rememberScrollState()
@@ -113,7 +123,10 @@ fun BasicDetailsStep(
             label = "Designation",
             placeholder = "Select One",
             value = designation,
-            onValueChange = onDesignationChange
+            onValueChange = onDesignationChange,
+            isOpen = isDesignationDropdownOpen,
+            onOpenChange = onDesignationDropdownOpenChange,
+            options = designationOptions
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -121,7 +134,10 @@ fun BasicDetailsStep(
             label = "Gender",
             placeholder = "Select One",
             value = gender,
-            onValueChange = onGenderChange
+            onValueChange = onGenderChange,
+            isOpen = isGenderDropdownOpen,
+            onOpenChange = onGenderDropdownOpenChange,
+            options = genderOptions
         )
 
         Spacer(modifier = Modifier.height(27.dp))
@@ -281,61 +297,80 @@ fun DatePickerField(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DropdownField(
     label: String,
     placeholder: String,
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    isOpen: Boolean,
+    onOpenChange: (Boolean) -> Unit,
+    options: List<String>
 ) {
     Column {
+
         Text(
             text = label,
             fontSize = 14.sp,
             fontWeight = FontWeight.W600,
             fontFamily = interSemiBold,
-            letterSpacing = 0.sp,
             color = Primary
         )
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp),
-            placeholder = {
-                Text(
-                    placeholder,
-                    fontFamily = interRegular,
-                    fontWeight = FontWeight.W400,
-                    fontSize = 14.sp,
-                    letterSpacing = 0.sp,
-                    color = Color(0xFFB1B1B1)
+        ExposedDropdownMenuBox(
+            expanded = isOpen,
+            onExpandedChange = onOpenChange
+        ) {
+            val fillMaxWidth = Modifier
+                .fillMaxWidth()
+            OutlinedTextField(
+                value = value,
+                onValueChange = {},
+                modifier = fillMaxWidth.menuAnchor(),
+                readOnly = true,
+                placeholder = {
+                    Text(
+                        text = placeholder,
+                        fontFamily = interRegular,
+                        fontSize = 14.sp,
+                        color = Color(0xFFB1B1B1)
+                    )
+                },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isOpen)
+                },
+                shape = RoundedCornerShape(10.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Secondary,
+                    unfocusedBorderColor = Secondary
                 )
-            },
-            readOnly = true,
-            trailingIcon = {
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = null,
-                    tint = Color(0xFF2979FF)
-                )
-            },
-            textStyle = TextStyle(
-                fontFamily = interRegular,
-                fontWeight = FontWeight.W400,
-                fontSize = 14.sp,
-                letterSpacing = 0.sp,
-            ),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Secondary,
-                unfocusedBorderColor = Secondary,
-                focusedLabelColor = Secondary,
-                cursorColor = Secondary,
-                errorBorderColor = Color.Red
             )
-        )
+
+            ExposedDropdownMenu(
+                containerColor = Container,
+                expanded = isOpen,
+                onDismissRequest = { onOpenChange(false) }
+            ) {
+                options.forEach { option ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                option, fontFamily = interRegular,
+                                fontWeight = FontWeight.W400,
+                                fontSize = 14.sp,
+                                letterSpacing = 0.sp,
+                            )
+                        },
+                        onClick = {
+                            onValueChange(option)
+                            onOpenChange(false)
+                        }
+                    )
+                }
+            }
+        }
     }
 }
