@@ -282,7 +282,7 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
-                onClick = { viewModel.onRegisterButtonClick() },
+                onClick = { if (!state.isLoading) viewModel.onRegisterButtonClick() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
