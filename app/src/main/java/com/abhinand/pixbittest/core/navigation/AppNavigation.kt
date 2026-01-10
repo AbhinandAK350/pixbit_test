@@ -1,5 +1,9 @@
 package com.abhinand.pixbittest.core.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -12,10 +16,11 @@ import com.abhinand.pixbittest.login.presentation.LoginScreen
 import com.abhinand.pixbittest.profile_details.presentation.ProfileDetailsScreen
 import com.abhinand.pixbittest.register.presentation.RegisterScreen
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AppNavigation() {
+fun AppNavigation(startDestination: Screen) {
 
-    val backStack = rememberNavBackStack(Screen.Home)
+    val backStack = rememberNavBackStack(startDestination)
 
     fun onBackPress() {
         if (backStack.size > 1) {
@@ -60,6 +65,8 @@ fun AppNavigation() {
             entry<Screen.ProfileDetails> {
                 ProfileDetailsScreen(onNavigate = ::handleNavigation)
             }
+        }, predictivePopTransitionSpec = {
+            EnterTransition.None.togetherWith(ExitTransition.None)
         }
     )
 
