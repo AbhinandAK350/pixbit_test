@@ -45,6 +45,9 @@ fun HomeScreen(modifier: Modifier = Modifier, onNavigate: (Action) -> Unit) {
         }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Container))
     }, floatingActionButton = {
         FloatingActionButton(
+            modifier = modifier
+                .padding(bottom = 30.dp, end = 20.dp)
+                .size(58.dp),
             onClick = { onNavigate(Action.Push(Screen.AddEmployee)) },
             shape = CircleShape,
             containerColor = Secondary
@@ -56,7 +59,7 @@ fun HomeScreen(modifier: Modifier = Modifier, onNavigate: (Action) -> Unit) {
                 tint = Color.White
             )
         }
-    }) { contentPadding ->
+    }, containerColor = Color(0xFFFBFDFF)) { contentPadding ->
 
         LazyColumn(
             modifier = modifier.padding(top = contentPadding.calculateTopPadding()),

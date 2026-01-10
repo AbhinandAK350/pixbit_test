@@ -70,7 +70,7 @@ fun RegisterScreen(
             },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = Container)
         )
-    }) { contentPadding ->
+    }, containerColor = Color(0xFFFBFDFF)) { contentPadding ->
         Column(
             modifier = Modifier
                 .padding(contentPadding)

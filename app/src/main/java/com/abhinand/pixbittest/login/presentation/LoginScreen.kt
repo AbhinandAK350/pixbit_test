@@ -53,7 +53,7 @@ fun LoginScreen(
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold { contentPadding ->
+    Scaffold(containerColor = Color(0xFFFBFDFF)) { contentPadding ->
 
         Column(modifier = Modifier.padding(top = contentPadding.calculateTopPadding())) {
 
