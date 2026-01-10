@@ -1,12 +1,17 @@
 package com.abhinand.pixbittest.home.presentation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -15,11 +20,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.abhinand.pixbittest.R
 import com.abhinand.pixbittest.core.navigation.Action
 import com.abhinand.pixbittest.core.navigation.Screen
@@ -31,7 +41,14 @@ import com.abhinand.pixbittest.home.presentation.components.EmployeeItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier, onNavigate: (Action) -> Unit) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    onNavigate: (Action) -> Unit,
+    viewModel: HomeViewModel = hiltViewModel()
+) {
+
+    val uiState by viewModel.uiState.collectAsState()
+    val listState = rememberLazyListState()
 
     Scaffold(topBar = {
         TopAppBar(title = {
@@ -61,17 +78,44 @@ fun HomeScreen(modifier: Modifier = Modifier, onNavigate: (Action) -> Unit) {
         }
     }, containerColor = Color(0xFFFBFDFF)) { contentPadding ->
 
+        if (uiState.isLoading && uiState.employees.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
+
         LazyColumn(
+            state = listState,
             modifier = modifier.padding(top = contentPadding.calculateTopPadding()),
             contentPadding = PaddingValues(vertical = 15.dp)
         ) {
 
-            items(20) {
+            items(uiState.employees) {
                 EmployeeItem(employeeImageUrl = "https://picsum.photos/200", onItemClick = {
                     onNavigate(Action.Push(Screen.ProfileDetails("0")))
                 })
             }
 
+            item {
+                if (uiState.isLoading) {
+                    Box(
+                        modifier = Modifier.fillParentMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+
+        }
+
+        LaunchedEffect(listState.layoutInfo) {
+            val lastVisibleItemIndex =
+                listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            val totalItemsCount = listState.layoutInfo.totalItemsCount
+            if (lastVisibleItemIndex >= totalItemsCount - 1 && !uiState.isLoading && !uiState.endReached) {
+                viewModel.fetchEmployeeList()
+            }
         }
 
     }
