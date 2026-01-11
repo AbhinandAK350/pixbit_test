@@ -107,33 +107,15 @@ fun ProfileDetailsScreen(modifier: Modifier = Modifier, onNavigate: (Action) -> 
                 Spacer(modifier = modifier.height(24.dp))
             }
 
-            item {
+            items(3) { item ->
                 SalaryMonthCard(
+                    id = 0,
                     month = "Month 1",
                     date = "12-12-2024",
                     percentage = "20%",
                     amount = "₹ 12,000",
-                    remarks = "First Salary"
-                )
-            }
-
-            item {
-                SalaryMonthCard(
-                    month = "Month 2",
-                    date = "12-01-2025",
-                    percentage = "50%",
-                    amount = "₹ 30,000",
-                    remarks = "Secondary Salary"
-                )
-            }
-
-            item {
-                SalaryMonthCard(
-                    month = "Month 3",
-                    date = "12-02-2025",
-                    percentage = "30%",
-                    amount = "₹ 18,000",
-                    remarks = "Final Salary"
+                    remarks = "First Salary",
+                    onDeleteClick = {}
                 )
             }
         }
@@ -375,12 +357,15 @@ private fun SalarySchemeHeader() {
 }
 
 @Composable
-private fun SalaryMonthCard(
+fun SalaryMonthCard(
+    id: Int,
     month: String,
     date: String,
     percentage: String,
     amount: String,
-    remarks: String
+    remarks: String,
+    showDeleteButton: Boolean = false,
+    onDeleteClick: (Int) -> Unit
 ) {
     Column {
         Text(
@@ -414,14 +399,30 @@ private fun SalaryMonthCard(
                     color = Primary,
                     letterSpacing = 0.sp
                 )
-                Text(
-                    text = remarks,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W400,
-                    fontFamily = interRegular,
-                    letterSpacing = 0.sp,
-                    color = Color(0xFF2A5277)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = remarks,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W400,
+                        fontFamily = interRegular,
+                        letterSpacing = 0.sp,
+                        color = Color(0xFF2A5277)
+                    )
+
+                    if (showDeleteButton) {
+                        IconButton(onClick = { onDeleteClick(id) }) {
+                            Image(
+                                modifier = Modifier.size(28.dp),
+                                painter = painterResource(R.drawable.ic_delete),
+                                contentDescription = null
+                            )
+                        }
+                    }
+                }
             }
         }
     }
