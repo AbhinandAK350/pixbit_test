@@ -71,7 +71,7 @@ fun ContactDetailsStep(
         )
         if (!isEmailValid && emailTouched) {
             Text(
-                text = "Name should only contain alphabets and white space",
+                text = "Enter a valid email address",
                 color = Color.Red,
                 fontSize = 12.sp
             )
