@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abhinand.pixbittest.add_employee.domain.usecase.GetDesignationUseCase
+import com.abhinand.pixbittest.add_employee.presentation.components.steps.PaymentDetail
 import com.abhinand.pixbittest.core.network.NetworkResource
 import com.abhinand.pixbittest.register.domain.valueobject.Email
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -157,6 +158,30 @@ class AddEmployeeViewModel @Inject constructor(
 
     fun onPaymentDateChange(date: String) {
         _uiState.update { it.copy(paymentDate = date) }
+    }
+
+    fun onPaymentDetailsChange(paymentDetail: PaymentDetail) {
+        _uiState.update { state ->
+            state.copy(
+                paymentDetails = state.paymentDetails + paymentDetail
+            )
+        }
+    }
+
+    fun onDeletePaymentDetail(index: Int) {
+        _uiState.update { state ->
+            state.copy(
+                paymentDetails = state.paymentDetails.filterIndexed { i, _ -> i != index }
+            )
+        }
+    }
+
+    fun onClearPaymentDetails() {
+        _uiState.update { state ->
+            state.copy(
+                paymentDetails = emptyList()
+            )
+        }
     }
 
     fun onSaveClick() {

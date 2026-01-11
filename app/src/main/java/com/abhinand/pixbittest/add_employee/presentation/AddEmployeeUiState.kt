@@ -1,7 +1,9 @@
 package com.abhinand.pixbittest.add_employee.presentation
 
 import android.net.Uri
+import com.abhinand.pixbittest.add_employee.presentation.components.steps.PaymentDetail
 import com.abhinand.pixbittest.core.utils.Util
+import java.util.Collections.emptyList
 
 data class AddEmployeeUiState(
     val currentStep: AddEmployeeStep = AddEmployeeStep.BASIC_DETAILS,
@@ -37,4 +39,6 @@ data class AddEmployeeUiState(
     val remarks: String = "",
 
     val datePickerTarget: DatePickerTarget? = null,
+
+    val paymentDetails: List<PaymentDetail> = emptyList()
 )

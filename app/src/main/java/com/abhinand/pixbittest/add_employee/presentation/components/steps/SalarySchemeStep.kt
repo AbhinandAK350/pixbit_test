@@ -6,17 +6,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -59,7 +59,6 @@ import com.abhinand.pixbittest.core.theme.Secondary
 import com.abhinand.pixbittest.core.theme.interMedium
 import com.abhinand.pixbittest.core.theme.interRegular
 import com.abhinand.pixbittest.core.theme.interSemiBold
-import com.abhinand.pixbittest.core.utils.Util
 import com.abhinand.pixbittest.profile_details.presentation.SalaryMonthCard
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -83,8 +82,10 @@ fun SalarySchemeStep(
     remarks: String,
     onRemarksChange: (String) -> Unit,
     onSaveClick: () -> Unit,
-//    paymentDetails: List<PaymentDetail>,
-//    onPaymentDetailsChange: (PaymentDetail) -> Unit
+    paymentDetails: List<PaymentDetail>,
+    onPaymentDetailsChange: (PaymentDetail) -> Unit,
+    onClearPaymentDetails: () -> Unit,
+    onDeletePaymentDetail: (Int) -> Unit
 ) {
 
     var selectedPeriod by rememberSaveable { mutableStateOf(3) }
@@ -92,7 +93,7 @@ fun SalarySchemeStep(
     var showBottomSheet by rememberSaveable { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    var paymentDetails by remember { mutableStateOf<List<PaymentDetail>>(emptyList()) }
+//    var paymentDetails by remember { mutableStateOf<List<PaymentDetail>>(emptyList()) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var tempSelectedPeriod by remember { mutableStateOf(selectedPeriod) }
 
@@ -110,7 +111,7 @@ fun SalarySchemeStep(
                 TextButton(
                     onClick = {
                         selectedPeriod = tempSelectedPeriod
-                        paymentDetails = emptyList()
+                        onClearPaymentDetails()
                         showConfirmationDialog = false
                     }
                 ) {
@@ -217,7 +218,8 @@ fun SalarySchemeStep(
                             amountPercentage = amount.toFloatOrNull() ?: 0f,
                             remarks = remarks
                         )
-                        paymentDetails = paymentDetails + newPayment
+                        onPaymentDetailsChange(newPayment)
+//                        paymentDetails = paymentDetails + newPayment
                         showBottomSheet = false
                         onAmountChange("")
                         onRemarksChange("")
@@ -238,214 +240,209 @@ fun SalarySchemeStep(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .padding(top = 24.dp)
+    LazyColumn(
+        modifier = modifier
+            .fillMaxWidth(),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 24.dp)
     ) {
-        StepIndicator(step = "Step 3/3", title = "Salary Scheme")
 
-        Spacer(modifier = Modifier.height(24.dp))
+        item {
+            StepIndicator(step = "Step 3/3", title = "Salary Scheme")
 
-        LazyColumn(
-            modifier = modifier
-                .fillMaxWidth()
-        ) {
+            Spacer(modifier = Modifier.height(24.dp))
 
-            item {
+            Text(
+                text = "Contract Period",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ContractChip(
+                    text = "3 Months",
+                    selected = selectedPeriod == 3,
+                    onClick = {
+                        if (paymentDetails.isNotEmpty()) {
+                            tempSelectedPeriod = 3
+                            showConfirmationDialog = true
+                        } else {
+                            selectedPeriod = 3
+                        }
+                    }
+                )
+                ContractChip(
+                    text = "6 Months",
+                    selected = selectedPeriod == 6,
+                    onClick = {
+                        if (paymentDetails.isNotEmpty()) {
+                            tempSelectedPeriod = 6
+                            showConfirmationDialog = true
+                        } else {
+                            selectedPeriod = 6
+                        }
+                    }
+                )
+                ContractChip(
+                    text = "12 Months",
+                    selected = selectedPeriod == 12,
+                    onClick = {
+                        if (paymentDetails.isNotEmpty()) {
+                            tempSelectedPeriod = 12
+                            showConfirmationDialog = true
+                        } else {
+                            selectedPeriod = 12
+                        }
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
-                    text = "Contract Period",
+                    text = "Total Salary",
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
+                    fontFamily = interSemiBold,
+                    fontWeight = FontWeight.W600
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    ContractChip(
-                        text = "3 Months",
-                        selected = selectedPeriod == 3,
-                        onClick = {
-                            if (paymentDetails.isNotEmpty()) {
-                                tempSelectedPeriod = 3
-                                showConfirmationDialog = true
-                            } else {
-                                selectedPeriod = 3
-                            }
-                        }
-                    )
-                    ContractChip(
-                        text = "6 Months",
-                        selected = selectedPeriod == 6,
-                        onClick = {
-                            if (paymentDetails.isNotEmpty()) {
-                                tempSelectedPeriod = 6
-                                showConfirmationDialog = true
-                            } else {
-                                selectedPeriod = 6
-                            }
-                        }
-                    )
-                    ContractChip(
-                        text = "12 Months",
-                        selected = selectedPeriod == 12,
-                        onClick = {
-                            if (paymentDetails.isNotEmpty()) {
-                                tempSelectedPeriod = 12
-                                showConfirmationDialog = true
-                            } else {
-                                selectedPeriod = 12
-                            }
-                        }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(Color(0xFFE2F1FF))
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = "Total Salary",
+                        text = "₹ ${salary.toInt()}",
                         fontSize = 14.sp,
-                        fontFamily = interSemiBold,
-                        fontWeight = FontWeight.W600
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(Color(0xFFE2F1FF))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Text(
-                            text = "₹ ${salary.toInt()}",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W400,
-                            fontFamily = interRegular,
-                            letterSpacing = 0.sp,
-                            color = Secondary
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                FlatLineSlider(
-                    value = salary,
-                    onValueChange = { salary = it },
-                    valueRange = 10_000f..200_000f
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "₹ 10,000",
-                        color = Color(0xFFB1B1B1),
-                        fontSize = 14.sp,
-                        fontFamily = interSemiBold,
                         fontWeight = FontWeight.W400,
-                        letterSpacing = 0.sp
-                    )
-                    Text(
-                        text = "₹ 2,00,000",
-                        color = Color(0xFFB1B1B1),
-                        fontSize = 14.sp,
-                        fontFamily = interSemiBold,
-                        fontWeight = FontWeight.W400,
-                        letterSpacing = 0.sp
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                if (paymentDetails.size < selectedPeriod) {
-                    Button(
-                        onClick = { showBottomSheet = true },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(54.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Secondary),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            stringResource(
-                                R.string.add_monthly_payment_1,
-                                selectedPeriod - paymentDetails.size
-                            )
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            items(paymentDetails) { detail ->
-                SalaryMonthCard(
-                    id = Util.generateNumericId(5),
-                    month = "Month ${paymentDetails.indexOf(detail) + 1}",
-                    date = detail.date,
-                    percentage = detail.amountPercentage.toString(),
-                    amount = detail.amount.toString(),
-                    remarks = detail.remarks,
-                    showDeleteButton = true,
-                    onDeleteClick = {
-
-                    }
-                )
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Remaining",
-                        color = Secondary,
-                        fontSize = 14.sp,
+                        fontFamily = interRegular,
                         letterSpacing = 0.sp,
-                        fontFamily = interMedium
+                        color = Secondary
                     )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    InfoChip(text = "₹ ${remainingAmount.toInt()}")
-                    InfoChip(text = "${remainingPercentage}%")
-                    InfoChip(text = "${selectedPeriod - paymentDetails.size} Month")
-                }
-
-                Spacer(modifier = Modifier.height(25.dp))
-
-                if (paymentDetails.size == selectedPeriod && totalPercentage == 100f) {
-                    Button(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(53.dp),
-                        onClick = { onSaveClick() },
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Secondary)
-                    ) {
-                        Text(text = "Save", fontWeight = FontWeight.W500, fontSize = 16.sp)
-                    }
                 }
             }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            FlatLineSlider(
+                value = salary,
+                onValueChange = { salary = it },
+                valueRange = 10_000f..200_000f
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "₹ 10,000",
+                    color = Color(0xFFB1B1B1),
+                    fontSize = 14.sp,
+                    fontFamily = interSemiBold,
+                    fontWeight = FontWeight.W400,
+                    letterSpacing = 0.sp
+                )
+                Text(
+                    text = "₹ 2,00,000",
+                    color = Color(0xFFB1B1B1),
+                    fontSize = 14.sp,
+                    fontFamily = interSemiBold,
+                    fontWeight = FontWeight.W400,
+                    letterSpacing = 0.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            if (paymentDetails.size < selectedPeriod) {
+                Button(
+                    onClick = { showBottomSheet = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Secondary),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        stringResource(
+                            R.string.add_monthly_payment_1,
+                            selectedPeriod - paymentDetails.size
+                        )
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        itemsIndexed(paymentDetails) { index, detail ->
+            SalaryMonthCard(
+                id = index,
+                month = "Month ${index + 1}",
+                date = detail.date,
+                percentage = detail.amountPercentage.toString(),
+                amount = (salary * detail.amountPercentage / 100).toInt().toString(),
+                remarks = detail.remarks,
+                showDeleteButton = true,
+                onDeleteClick = {
+                    onDeletePaymentDetail(index)
+                }
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        item {
+            if (paymentDetails.size == selectedPeriod && totalPercentage == 100f) {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(53.dp),
+                    onClick = { onSaveClick() },
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Secondary)
+                ) {
+                    Text(text = "Save", fontWeight = FontWeight.W500, fontSize = 16.sp)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Remaining",
+                    color = Secondary,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.sp,
+                    fontFamily = interMedium
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                InfoChip(text = "₹ ${remainingAmount.toInt()}")
+                InfoChip(text = "${remainingPercentage}%")
+                InfoChip(text = "${selectedPeriod - paymentDetails.size} Month")
+            }
+
+            Spacer(modifier = Modifier.height(25.dp))
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.abhinand.pixbittest.add_employee.presentation
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -32,6 +33,8 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abhinand.pixbittest.R
+import com.abhinand.pixbittest.add_employee.presentation.components.steps.BasicDetailsStep
+import com.abhinand.pixbittest.add_employee.presentation.components.steps.ContactDetailsStep
 import com.abhinand.pixbittest.add_employee.presentation.components.steps.SalarySchemeStep
 import com.abhinand.pixbittest.core.navigation.Action
 import com.abhinand.pixbittest.core.theme.Container
@@ -61,15 +64,15 @@ fun AddEmployeeScreen(
 ) {
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    LocalContext.current
+    val context = LocalContext.current
 
-    rememberLauncherForActivityResult(
+    val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         viewModel.onProfileImageChange(uri)
     }
 
-    rememberLauncherForActivityResult(
+    val resumePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         viewModel.onResumeFileChange(uri)
@@ -183,77 +186,72 @@ fun AddEmployeeScreen(
         )
     }, containerColor = Color(0xFFFBFDFF)) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding)) {
-            SalarySchemeStep(
-                date = state.paymentDate,
-                onDatePickerClick = { viewModel.onShowDatePickerChange(DatePickerTarget.PAYMENT_DATE) },
-                amount = state.amount,
-                onAmountChange = viewModel::onAmountChange,
-                remarks = state.remarks,
-                onRemarksChange = viewModel::onRemarksChange,
-                onSaveClick = viewModel::onSaveClick
-            )
-//            when (state.currentStep) {
-//                AddEmployeeStep.BASIC_DETAILS -> {
-//                    BasicDetailsStep(
-//                        imageUri = state.profileImage,
-//                        onImageClick = { imagePickerLauncher.launch("image/*") },
-//                        onNext = { viewModel.onCurrentStepChange(AddEmployeeStep.CONTACT_DETAILS) },
-//                        firstName = state.firstName,
-//                        onFirstNameChange = viewModel::onFirstNameChange,
-//                        lastName = state.lastName,
-//                        onLastNameChange = viewModel::onLastNameChange,
-//                        dob = state.dob,
-//                        onDatePickerClick = { viewModel.onShowDatePickerChange(DatePickerTarget.DOB) },
-//                        gender = state.gender,
-//                        onGenderChange = viewModel::onGenderChange,
-//                        isGenderDropdownOpen = state.isGenderDropdownOpen,
-//                        onGenderDropdownOpenChange = viewModel::onGenderDropdownOpenChange,
-//                        genderOptions = state.genderOptions,
-//                        designation = state.designation,
-//                        onDesignationChange = viewModel::onDesignationChange,
-//                        isDesignationDropdownOpen = state.isDesignationDropdownOpen,
-//                        onDesignationDropdownOpenChange = viewModel::onDesignationDropdownOpenChange,
-//                        designationOptions = state.designationOptions,
-//                        isNextButtonEnabled = state.isNextButtonEnabled,
-//                        resumeFile = state.resumeFile,
-//                        resumeFileName = state.resumeFileName,
-//                        onResumeClick = { resumePickerLauncher.launch("application/pdf") },
-//                        onViewResumeClick = {
-//                            val intent = Intent(Intent.ACTION_VIEW)
-//                            intent.setDataAndType(state.resumeFile, "application/pdf")
-//                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//                            context.startActivity(intent)
-//                        }
-//                    )
-//                }
-//
-//                AddEmployeeStep.CONTACT_DETAILS -> {
-//                    ContactDetailsStep(
-//                        mobileNumber = state.mobileNumber,
-//                        onMobileNumberChange = viewModel::onMobileNumberChange,
-//                        email = state.email,
-//                        onEmailChange = viewModel::onEmailChange,
-//                        address = state.address,
-//                        onAddressChange = viewModel::onAddressChange,
-//                        onNext = { viewModel.onCurrentStepChange(AddEmployeeStep.SALARY_SCHEME) },
-//                        emailTouched = state.emailTouched,
-//                        isEmailValid = state.isEmailValid,
-//                        isContactNextButtonEnabled = state.isContactNextButtonEnabled
-//                    )
-//                }
-//
-//                AddEmployeeStep.SALARY_SCHEME -> {
-//                    SalarySchemeStep(
-//                        date = state.paymentDate,
-//                        onDatePickerClick = { viewModel.onShowDatePickerChange(DatePickerTarget.PAYMENT_DATE) },
-//                        amount = state.amount,
-//                        onAmountChange = viewModel::onAmountChange,
-//                        remarks = state.remarks,
-//                        onRemarksChange = viewModel::onRemarksChange,
-//                        onSaveClick = viewModel::onSaveClick
-//                    )
-//                }
-//            }
+            when (state.currentStep) {
+                AddEmployeeStep.BASIC_DETAILS -> {
+                    BasicDetailsStep(
+                        imageUri = state.profileImage,
+                        onImageClick = { imagePickerLauncher.launch("image/*") },
+                        onNext = { viewModel.onCurrentStepChange(AddEmployeeStep.CONTACT_DETAILS) },
+                        firstName = state.firstName,
+                        onFirstNameChange = viewModel::onFirstNameChange,
+                        lastName = state.lastName,
+                        onLastNameChange = viewModel::onLastNameChange,
+                        dob = state.dob,
+                        onDatePickerClick = { viewModel.onShowDatePickerChange(DatePickerTarget.DOB) },
+                        gender = state.gender,
+                        onGenderChange = viewModel::onGenderChange,
+                        isGenderDropdownOpen = state.isGenderDropdownOpen,
+                        onGenderDropdownOpenChange = viewModel::onGenderDropdownOpenChange,
+                        genderOptions = state.genderOptions,
+                        designation = state.designation,
+                        onDesignationChange = viewModel::onDesignationChange,
+                        isDesignationDropdownOpen = state.isDesignationDropdownOpen,
+                        onDesignationDropdownOpenChange = viewModel::onDesignationDropdownOpenChange,
+                        designationOptions = state.designationOptions,
+                        isNextButtonEnabled = state.isNextButtonEnabled,
+                        resumeFile = state.resumeFile,
+                        resumeFileName = state.resumeFileName,
+                        onResumeClick = { resumePickerLauncher.launch("application/pdf") },
+                        onViewResumeClick = {
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            intent.setDataAndType(state.resumeFile, "application/pdf")
+                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            context.startActivity(intent)
+                        }
+                    )
+                }
+
+                AddEmployeeStep.CONTACT_DETAILS -> {
+                    ContactDetailsStep(
+                        mobileNumber = state.mobileNumber,
+                        onMobileNumberChange = viewModel::onMobileNumberChange,
+                        email = state.email,
+                        onEmailChange = viewModel::onEmailChange,
+                        address = state.address,
+                        onAddressChange = viewModel::onAddressChange,
+                        onNext = { viewModel.onCurrentStepChange(AddEmployeeStep.SALARY_SCHEME) },
+                        emailTouched = state.emailTouched,
+                        isEmailValid = state.isEmailValid,
+                        isContactNextButtonEnabled = state.isContactNextButtonEnabled
+                    )
+                }
+
+                AddEmployeeStep.SALARY_SCHEME -> {
+                    SalarySchemeStep(
+                        date = state.paymentDate,
+                        onDatePickerClick = { viewModel.onShowDatePickerChange(DatePickerTarget.PAYMENT_DATE) },
+                        amount = state.amount,
+                        onAmountChange = viewModel::onAmountChange,
+                        remarks = state.remarks,
+                        onRemarksChange = viewModel::onRemarksChange,
+                        onSaveClick = viewModel::onSaveClick,
+                        paymentDetails = state.paymentDetails,
+                        onPaymentDetailsChange = viewModel::onPaymentDetailsChange,
+                        onClearPaymentDetails = viewModel::onClearPaymentDetails,
+                        onDeletePaymentDetail = viewModel::onDeletePaymentDetail
+                    )
+                }
+            }
         }
     }
 
