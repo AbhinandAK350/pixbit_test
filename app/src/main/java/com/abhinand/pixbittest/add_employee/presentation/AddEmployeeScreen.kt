@@ -1,5 +1,6 @@
 package com.abhinand.pixbittest.add_employee.presentation
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -23,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -56,6 +58,8 @@ fun AddEmployeeScreen(
 ) {
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -183,7 +187,13 @@ fun AddEmployeeScreen(
                         isNextButtonEnabled = state.isNextButtonEnabled,
                         resumeFile = state.resumeFile,
                         resumeFileName = state.resumeFileName,
-                        onResumeClick = { resumePickerLauncher.launch("application/pdf") }
+                        onResumeClick = { resumePickerLauncher.launch("application/pdf") },
+                        onViewResumeClick = {
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            intent.setDataAndType(state.resumeFile, "application/pdf")
+                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            context.startActivity(intent)
+                        }
                     )
                 }
 

@@ -75,7 +75,8 @@ fun BasicDetailsStep(
     isNextButtonEnabled: Boolean,
     resumeFile: Uri?,
     resumeFileName: String?,
-    onResumeClick: () -> Unit
+    onResumeClick: () -> Unit,
+    onViewResumeClick: () -> Unit
 ) {
 
     val scrollState = rememberScrollState()
@@ -149,7 +150,8 @@ fun BasicDetailsStep(
         ResumeSection(
             resumeFile = resumeFile,
             onResumeClick = onResumeClick,
-            resumeFileName = resumeFileName
+            resumeFileName = resumeFileName,
+            onViewResumeClick = onViewResumeClick
         )
 
         Spacer(modifier = Modifier.height(27.dp))
@@ -417,7 +419,8 @@ fun ResumeSection(
     modifier: Modifier = Modifier,
     resumeFile: Uri? = null,
     resumeFileName: String?,
-    onResumeClick: () -> Unit
+    onResumeClick: () -> Unit,
+    onViewResumeClick: () -> Unit
 ) {
 
     val isResumeSelected = resumeFile != null
@@ -478,6 +481,7 @@ fun ResumeSection(
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color(0xFFE2F1FF))
                     .padding(horizontal = 8.dp, vertical = 7.dp)
+                    .clickable { onViewResumeClick() }
             ) {
                 Text(
                     text = "View",
