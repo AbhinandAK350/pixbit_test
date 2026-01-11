@@ -91,4 +91,16 @@ class AddEmployeeViewModel @Inject constructor(
     fun onDesignationDropdownOpenChange(isOpen: Boolean) {
         _uiState.update { it.copy(isDesignationDropdownOpen = isOpen) }
     }
+
+    fun onMobileNumberChange(mobileNumber: String) {
+        _uiState.update { it.copy(mobileNumber = mobileNumber) }
+    }
+
+    fun onEmailChange(email: String) {
+        _uiState.update { it.copy(email = email) }
+    }
+
+    fun onAddressChange(address: String) {
+        _uiState.update { it.copy(address = address) }
+    }
 }

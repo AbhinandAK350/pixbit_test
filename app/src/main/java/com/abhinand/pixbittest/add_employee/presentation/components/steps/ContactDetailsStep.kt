@@ -10,20 +10,31 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.abhinand.pixbittest.R
 import com.abhinand.pixbittest.add_employee.presentation.components.PrimaryButton
 import com.abhinand.pixbittest.add_employee.presentation.components.StepIndicator
 import com.abhinand.pixbittest.core.theme.Secondary
 
 @Composable
-fun ContactDetailsStep(onNext: () -> Unit) {
+fun ContactDetailsStep(
+    mobileNumber: String,
+    onMobileNumberChange: (String) -> Unit,
+    email: String,
+    onEmailChange: (String) -> Unit,
+    address: String,
+    onAddressChange: (String) -> Unit,
+    onNext: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -35,17 +46,21 @@ fun ContactDetailsStep(onNext: () -> Unit) {
 
         Spacer(modifier = Modifier.height(27.dp))
 
-//        LabeledTextField(
-//            label = "Mobile Number",
-//            placeholder = stringResource(R.string.enter_mobile_number)
-//        )
+        LabeledTextField(
+            label = "Mobile Number",
+            placeholder = stringResource(R.string.enter_mobile_number),
+            value = mobileNumber,
+            onValueChange = onMobileNumberChange
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-//        LabeledTextField(
-//            label = "Email",
-//            placeholder = stringResource(R.string.enter_email_address)
-//        )
+        LabeledTextField(
+            label = "Email",
+            placeholder = stringResource(R.string.enter_mail_address),
+            value = email,
+            onValueChange = onEmailChange
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -60,8 +75,8 @@ fun ContactDetailsStep(onNext: () -> Unit) {
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
-                value = "",
-                onValueChange = { it },
+                value = address,
+                onValueChange = { onAddressChange(it) },
                 placeholder = { Text("Enter Address") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -76,6 +91,13 @@ fun ContactDetailsStep(onNext: () -> Unit) {
                 maxLines = 4,
                 textStyle = LocalTextStyle.current.copy(
                     textAlign = TextAlign.Start
+                ),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Secondary,
+                    unfocusedBorderColor = Secondary,
+                    focusedLabelColor = Secondary,
+                    cursorColor = Secondary,
+                    errorBorderColor = Color.Red
                 )
             )
         }

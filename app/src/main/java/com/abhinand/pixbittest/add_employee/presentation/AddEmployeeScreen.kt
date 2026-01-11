@@ -199,6 +199,12 @@ fun AddEmployeeScreen(
 
                 AddEmployeeStep.CONTACT_DETAILS -> {
                     ContactDetailsStep(
+                        mobileNumber = state.mobileNumber,
+                        onMobileNumberChange = viewModel::onMobileNumberChange,
+                        email = state.email,
+                        onEmailChange = viewModel::onEmailChange,
+                        address = state.address,
+                        onAddressChange = viewModel::onAddressChange,
                         onNext = { viewModel.onCurrentStepChange(AddEmployeeStep.SALARY_SCHEME) }
                     )
                 }

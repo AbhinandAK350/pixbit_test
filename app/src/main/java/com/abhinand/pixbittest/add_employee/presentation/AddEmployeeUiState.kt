@@ -23,5 +23,8 @@ data class AddEmployeeUiState(
         "Product Manager",
         "Designer",
         "QA Engineer"
-    )
+    ),
+    val mobileNumber: String = "",
+    val email: String = "",
+    val address: String = ""
 )
