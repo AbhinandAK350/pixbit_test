@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,19 +15,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -35,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -141,6 +140,9 @@ fun BasicDetailsStep(
             onOpenChange = onGenderDropdownOpenChange,
             options = genderOptions
         )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        ResumeSection()
 
         Spacer(modifier = Modifier.height(27.dp))
 
@@ -281,8 +283,9 @@ fun DatePickerField(
                 enabled = false,
                 shape = RoundedCornerShape(10.dp),
                 trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
+                    Image(
+                        modifier = Modifier.size(28.dp),
+                        painter = painterResource(R.drawable.ic_calendar),
                         contentDescription = null,
                     )
                 },
@@ -352,7 +355,15 @@ fun DropdownField(
                     )
                 },
                 trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isOpen)
+                    Image(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .graphicsLayer {
+                                rotationZ = if (isOpen) 180f else 0f
+                            },
+                        painter = painterResource(R.drawable.ic_dropdown),
+                        contentDescription = null,
+                    )
                 },
                 shape = RoundedCornerShape(10.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -385,4 +396,74 @@ fun DropdownField(
             }
         }
     }
+}
+
+@Composable
+fun ResumeSection(modifier: Modifier = Modifier, resumeFile: Uri? = null) {
+
+    val isResumeSelected = resumeFile != null
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .border(0.5.dp, Secondary, RoundedCornerShape(10.dp))
+            .padding(24.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            modifier = modifier
+                .width(46.dp)
+                .height(54.dp),
+            painter = if (isResumeSelected) painterResource(R.drawable.ic_pdf) else painterResource(
+                R.drawable.ic_select_pdf
+            ),
+            contentDescription = null
+        )
+
+        Spacer(modifier = modifier.width(8.dp))
+
+        Column {
+            Text(
+                text = if (isResumeSelected) "File name.pdf" else stringResource(R.string.upload_resume),
+                fontWeight = FontWeight.W600,
+                color = Primary,
+                letterSpacing = 0.sp,
+                fontSize = 14.sp,
+                fontFamily = interSemiBold
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = if (isResumeSelected) stringResource(R.string.tap_to_change) else stringResource(
+                    R.string.upload_pdf_file_or_image
+                ),
+                color = Color(0xFFB1B1B1),
+                fontSize = 12.sp,
+                fontFamily = interRegular,
+                letterSpacing = 0.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        if (isResumeSelected) {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xFFE2F1FF))
+                    .padding(horizontal = 8.dp, vertical = 7.dp)
+            ) {
+                Text(
+                    text = "View",
+                    fontSize = 14.sp,
+                    color = Secondary,
+                    fontWeight = FontWeight.W400,
+                    letterSpacing = 0.sp,
+                    fontFamily = interRegular
+                )
+            }
+        }
+    }
+
 }

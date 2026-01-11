@@ -16,5 +16,6 @@ data class AddEmployeeUiState(
     val isDesignationDropdownOpen: Boolean = false,
     val designationOptions: List<String> = listOf("Designer", "Developer", "QA"),
     val showDatePicker: Boolean = false,
+    val resumeFile: Uri? = null,
     val isNextButtonEnabled: Boolean = false
 )
