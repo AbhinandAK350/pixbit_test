@@ -24,7 +24,11 @@ data class AddEmployeeUiState(
         "Designer",
         "QA Engineer"
     ),
+
     val mobileNumber: String = "",
     val email: String = "",
-    val address: String = ""
+    val address: String = "",
+    val isContactNextButtonEnabled: Boolean = false,
+    val isEmailValid: Boolean = true,
+    val emailTouched: Boolean = false,
 )

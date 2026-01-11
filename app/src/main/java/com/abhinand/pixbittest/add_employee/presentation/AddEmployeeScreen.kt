@@ -205,7 +205,10 @@ fun AddEmployeeScreen(
                         onEmailChange = viewModel::onEmailChange,
                         address = state.address,
                         onAddressChange = viewModel::onAddressChange,
-                        onNext = { viewModel.onCurrentStepChange(AddEmployeeStep.SALARY_SCHEME) }
+                        onNext = { viewModel.onCurrentStepChange(AddEmployeeStep.SALARY_SCHEME) },
+                        emailTouched = state.emailTouched,
+                        isEmailValid = state.isEmailValid,
+                        isContactNextButtonEnabled = state.isContactNextButtonEnabled
                     )
                 }
 

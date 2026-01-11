@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -21,9 +23,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.abhinand.pixbittest.R
-import com.abhinand.pixbittest.add_employee.presentation.components.PrimaryButton
 import com.abhinand.pixbittest.add_employee.presentation.components.StepIndicator
 import com.abhinand.pixbittest.core.theme.Secondary
+import com.abhinand.pixbittest.core.theme.interRegular
+import com.abhinand.pixbittest.core.utils.InputType
 
 @Composable
 fun ContactDetailsStep(
@@ -33,7 +36,10 @@ fun ContactDetailsStep(
     onEmailChange: (String) -> Unit,
     address: String,
     onAddressChange: (String) -> Unit,
-    onNext: () -> Unit
+    onNext: () -> Unit,
+    isEmailValid: Boolean,
+    emailTouched: Boolean,
+    isContactNextButtonEnabled: Boolean
 ) {
     Column(
         modifier = Modifier
@@ -50,6 +56,7 @@ fun ContactDetailsStep(
             label = "Mobile Number",
             placeholder = stringResource(R.string.enter_mobile_number),
             value = mobileNumber,
+            inputType = InputType.PHONE,
             onValueChange = onMobileNumberChange
         )
 
@@ -59,8 +66,16 @@ fun ContactDetailsStep(
             label = "Email",
             placeholder = stringResource(R.string.enter_mail_address),
             value = email,
+            inputType = InputType.EMAIL,
             onValueChange = onEmailChange
         )
+        if (!isEmailValid && emailTouched) {
+            Text(
+                text = "Name should only contain alphabets and white space",
+                color = Color.Red,
+                fontSize = 12.sp
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -77,7 +92,16 @@ fun ContactDetailsStep(
             OutlinedTextField(
                 value = address,
                 onValueChange = { onAddressChange(it) },
-                placeholder = { Text("Enter Address") },
+                placeholder = {
+                    Text(
+                        text = "Address",
+                        fontFamily = interRegular,
+                        fontWeight = FontWeight.W400,
+                        fontSize = 14.sp,
+                        letterSpacing = 0.sp,
+                        color = Color(0xFFB1B1B1)
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(110.dp)
@@ -90,7 +114,11 @@ fun ContactDetailsStep(
                 singleLine = false,
                 maxLines = 4,
                 textStyle = LocalTextStyle.current.copy(
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Start,
+                    fontFamily = interRegular,
+                    fontWeight = FontWeight.W400,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.sp
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Secondary,
@@ -104,7 +132,17 @@ fun ContactDetailsStep(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        PrimaryButton(text = "Next", onClick = onNext)
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(53.dp),
+            onClick = { onNext() },
+            enabled = isContactNextButtonEnabled,
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Secondary)
+        ) {
+            Text(text = "Next", fontWeight = FontWeight.W500, fontSize = 16.sp)
+        }
 
         Spacer(modifier = Modifier.height(25.dp))
     }

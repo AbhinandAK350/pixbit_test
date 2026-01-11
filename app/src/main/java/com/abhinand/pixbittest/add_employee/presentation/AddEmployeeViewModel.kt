@@ -6,6 +6,7 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.abhinand.pixbittest.register.domain.valueobject.Email
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +33,12 @@ class AddEmployeeViewModel @Inject constructor(
                             state.lastName.isNotEmpty() &&
                             state.dob.isNotEmpty() &&
                             state.gender.isNotEmpty() &&
-                            state.designation.isNotEmpty()
+                            state.designation.isNotEmpty(),
+                    isContactNextButtonEnabled = state.address.isNotEmpty() &&
+                            state.email.isNotEmpty() &&
+                            state.isEmailValid &&
+                            state.mobileNumber.isNotEmpty() &&
+                            state.mobileNumber.length == 10
                 )
             }
         }.launchIn(viewModelScope)
@@ -97,7 +103,14 @@ class AddEmployeeViewModel @Inject constructor(
     }
 
     fun onEmailChange(email: String) {
-        _uiState.update { it.copy(email = email) }
+        val isEmailValid = Email.create(email).isSuccess
+        _uiState.update {
+            it.copy(
+                email = email,
+                isEmailValid = isEmailValid,
+                emailTouched = true
+            )
+        }
     }
 
     fun onAddressChange(address: String) {

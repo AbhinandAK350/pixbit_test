@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -39,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,6 +52,7 @@ import com.abhinand.pixbittest.core.theme.Primary
 import com.abhinand.pixbittest.core.theme.Secondary
 import com.abhinand.pixbittest.core.theme.interRegular
 import com.abhinand.pixbittest.core.theme.interSemiBold
+import com.abhinand.pixbittest.core.utils.InputType
 
 @Composable
 fun BasicDetailsStep(
@@ -213,6 +216,7 @@ fun LabeledTextField(
     label: String,
     placeholder: String,
     value: String,
+    inputType: InputType = InputType.TEXT,
     onValueChange: (String) -> Unit
 ) {
     Column {
@@ -229,7 +233,24 @@ fun LabeledTextField(
 
         OutlinedTextField(
             value = value,
-            onValueChange = onValueChange,
+            onValueChange = { newValue ->
+                when (inputType) {
+                    InputType.PHONE -> {
+                        val digitsOnly = newValue.filter { it.isDigit() }
+                        if (digitsOnly.length <= 10) {
+                            onValueChange(digitsOnly)
+                        }
+                    }
+
+                    InputType.NUMBER -> {
+                        if (newValue.all { it.isDigit() }) {
+                            onValueChange(newValue)
+                        }
+                    }
+
+                    else -> onValueChange(newValue)
+                }
+            },
             placeholder = {
                 Text(
                     placeholder,
@@ -262,7 +283,15 @@ fun LabeledTextField(
                 focusedLabelColor = Secondary,
                 cursorColor = Secondary,
                 errorBorderColor = Color.Red
-            )
+            ),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = when (inputType) {
+                    InputType.EMAIL -> KeyboardType.Email
+                    InputType.PHONE -> KeyboardType.Phone
+                    InputType.NUMBER -> KeyboardType.Number
+                    InputType.TEXT -> KeyboardType.Text
+                }
+            ),
         )
     }
 }
