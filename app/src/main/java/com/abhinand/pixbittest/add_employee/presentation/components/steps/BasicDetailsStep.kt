@@ -39,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -71,7 +72,10 @@ fun BasicDetailsStep(
     isDesignationDropdownOpen: Boolean,
     onDesignationDropdownOpenChange: (Boolean) -> Unit,
     designationOptions: List<String>,
-    isNextButtonEnabled: Boolean
+    isNextButtonEnabled: Boolean,
+    resumeFile: Uri?,
+    resumeFileName: String?,
+    onResumeClick: () -> Unit
 ) {
 
     val scrollState = rememberScrollState()
@@ -142,7 +146,11 @@ fun BasicDetailsStep(
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        ResumeSection()
+        ResumeSection(
+            resumeFile = resumeFile,
+            onResumeClick = onResumeClick,
+            resumeFileName = resumeFileName
+        )
 
         Spacer(modifier = Modifier.height(27.dp))
 
@@ -365,6 +373,12 @@ fun DropdownField(
                         contentDescription = null,
                     )
                 },
+                textStyle = TextStyle(
+                    fontFamily = interRegular,
+                    fontWeight = FontWeight.W400,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.sp,
+                ),
                 shape = RoundedCornerShape(10.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Secondary,
@@ -399,7 +413,12 @@ fun DropdownField(
 }
 
 @Composable
-fun ResumeSection(modifier: Modifier = Modifier, resumeFile: Uri? = null) {
+fun ResumeSection(
+    modifier: Modifier = Modifier,
+    resumeFile: Uri? = null,
+    resumeFileName: String?,
+    onResumeClick: () -> Unit
+) {
 
     val isResumeSelected = resumeFile != null
 
@@ -407,6 +426,7 @@ fun ResumeSection(modifier: Modifier = Modifier, resumeFile: Uri? = null) {
         modifier = modifier
             .fillMaxWidth()
             .border(0.5.dp, Secondary, RoundedCornerShape(10.dp))
+            .clickable { onResumeClick() }
             .padding(24.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -422,14 +442,21 @@ fun ResumeSection(modifier: Modifier = Modifier, resumeFile: Uri? = null) {
 
         Spacer(modifier = modifier.width(8.dp))
 
-        Column {
+        Column(
+            modifier = modifier
+                .weight(1f)
+                .padding(end = 10.dp)
+        ) {
             Text(
-                text = if (isResumeSelected) "File name.pdf" else stringResource(R.string.upload_resume),
+                text = if (isResumeSelected) resumeFileName
+                    ?: "File name.pdf" else stringResource(R.string.upload_resume),
                 fontWeight = FontWeight.W600,
                 color = Primary,
                 letterSpacing = 0.sp,
                 fontSize = 14.sp,
-                fontFamily = interSemiBold
+                fontFamily = interSemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -444,8 +471,6 @@ fun ResumeSection(modifier: Modifier = Modifier, resumeFile: Uri? = null) {
                 letterSpacing = 0.sp
             )
         }
-
-        Spacer(modifier = Modifier.weight(1f))
 
         if (isResumeSelected) {
             Box(

@@ -1,9 +1,13 @@
 package com.abhinand.pixbittest.add_employee.presentation
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -11,8 +15,11 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
+
 @HiltViewModel
-class AddEmployeeViewModel @Inject constructor() : ViewModel() {
+class AddEmployeeViewModel @Inject constructor(
+    @ApplicationContext private val context: Context
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddEmployeeUiState())
     val uiState = _uiState.asStateFlow()
@@ -37,6 +44,20 @@ class AddEmployeeViewModel @Inject constructor() : ViewModel() {
 
     fun onProfileImageChange(uri: Uri?) {
         _uiState.update { it.copy(profileImage = uri) }
+    }
+
+    @SuppressLint("Range")
+    fun onResumeFileChange(uri: Uri?) {
+        uri ?: return
+        var fileName = ""
+        val cursor = context.contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                fileName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+            }
+        }
+
+        _uiState.update { it.copy(resumeFile = uri, resumeFileName = fileName) }
     }
 
     fun onFirstNameChange(name: String) {

@@ -62,6 +62,12 @@ fun AddEmployeeScreen(
         viewModel.onProfileImageChange(uri)
     }
 
+    val resumePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        viewModel.onResumeFileChange(uri)
+    }
+
     BackHandler {
         when (state.currentStep) {
             AddEmployeeStep.CONTACT_DETAILS -> {
@@ -174,7 +180,10 @@ fun AddEmployeeScreen(
                         isDesignationDropdownOpen = state.isDesignationDropdownOpen,
                         onDesignationDropdownOpenChange = viewModel::onDesignationDropdownOpenChange,
                         designationOptions = state.designationOptions,
-                        isNextButtonEnabled = state.isNextButtonEnabled
+                        isNextButtonEnabled = state.isNextButtonEnabled,
+                        resumeFile = state.resumeFile,
+                        resumeFileName = state.resumeFileName,
+                        onResumeClick = { resumePickerLauncher.launch("application/pdf") }
                     )
                 }
 
