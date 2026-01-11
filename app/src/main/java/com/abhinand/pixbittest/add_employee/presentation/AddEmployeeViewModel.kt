@@ -107,8 +107,17 @@ class AddEmployeeViewModel @Inject constructor(
         _uiState.update { it.copy(designation = designation, isDesignationDropdownOpen = false) }
     }
 
-    fun onShowDatePickerChange(show: Boolean) {
-        _uiState.update { it.copy(showDatePicker = show) }
+    fun onShowDatePickerChange(datePickerTarget: DatePickerTarget) {
+        _uiState.update { it.copy(showDatePicker = true, datePickerTarget = datePickerTarget) }
+    }
+
+    fun closeDatePicker() {
+        _uiState.update {
+            it.copy(
+                showDatePicker = false,
+                datePickerTarget = null
+            )
+        }
     }
 
     fun onGenderDropdownOpenChange(isOpen: Boolean) {
@@ -136,5 +145,21 @@ class AddEmployeeViewModel @Inject constructor(
 
     fun onAddressChange(address: String) {
         _uiState.update { it.copy(address = address) }
+    }
+
+    fun onAmountChange(amount: String) {
+        _uiState.update { it.copy(amount = amount) }
+    }
+
+    fun onRemarksChange(remarks: String) {
+        _uiState.update { it.copy(remarks = remarks) }
+    }
+
+    fun onPaymentDateChange(date: String) {
+        _uiState.update { it.copy(paymentDate = date) }
+    }
+
+    fun onSaveClick() {
+
     }
 }

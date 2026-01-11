@@ -31,4 +31,10 @@ data class AddEmployeeUiState(
     val isContactNextButtonEnabled: Boolean = false,
     val isEmailValid: Boolean = true,
     val emailTouched: Boolean = false,
+
+    val paymentDate: String = Util.getTodayDate(),
+    val amount: String = "",
+    val remarks: String = "",
+
+    val datePickerTarget: DatePickerTarget? = null,
 )

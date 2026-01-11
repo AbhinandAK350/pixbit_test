@@ -27,4 +27,5 @@
     <string name="upload_pdf_file_or_image">Upload PDF file or image</string>
     <string name="upload_resume">Upload Resume</string>
     <string name="tap_to_change">Tap to change</string>
+    <string name="add_monthly_payment_1">Add Monthly Payment (1/%1$d)</string>
 </resources>

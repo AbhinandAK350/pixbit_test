@@ -23,33 +23,155 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.abhinand.pixbittest.R
 import com.abhinand.pixbittest.add_employee.presentation.components.StepIndicator
 import com.abhinand.pixbittest.core.theme.Secondary
 import com.abhinand.pixbittest.core.theme.interMedium
 import com.abhinand.pixbittest.core.theme.interRegular
 import com.abhinand.pixbittest.core.theme.interSemiBold
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SalarySchemeStep(modifier: Modifier = Modifier, onFinish: () -> Unit) {
+fun SalarySchemeStep(
+    modifier: Modifier = Modifier,
+    date: String,
+    onDatePickerClick: () -> Unit,
+    amount: String,
+    onAmountChange: (String) -> Unit,
+    remarks: String,
+    onRemarksChange: (String) -> Unit,
+    onSaveClick: () -> Unit
+) {
 
     var selectedPeriod by rememberSaveable { mutableStateOf(3) }
     var salary by rememberSaveable { mutableFloatStateOf(30000f) }
+    var showBottomSheet by rememberSaveable { mutableStateOf(false) }
+    rememberCoroutineScope()
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showBottomSheet = false },
+            sheetState = sheetState,
+            dragHandle = {},
+            shape = RoundedCornerShape(10.dp),
+            containerColor = Color(0xFFFBFDFF)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                DatePickerField("Payment Date", date, onClick = { onDatePickerClick() })
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                LabeledTextField(
+                    label = "Amount %",
+                    placeholder = "Enter amount percentage",
+                    value = amount,
+                    onValueChange = { onAmountChange(it) }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Column {
+                    Text(
+                        text = stringResource(R.string.remarks),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF1A1A1A)
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    OutlinedTextField(
+                        value = remarks,
+                        onValueChange = { onRemarksChange(it) },
+                        placeholder = {
+                            Text(
+                                text = stringResource(R.string.remarks),
+                                fontFamily = interRegular,
+                                fontWeight = FontWeight.W400,
+                                fontSize = 14.sp,
+                                letterSpacing = 0.sp,
+                                color = Color(0xFFB1B1B1)
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(110.dp)
+                            .border(
+                                width = 0.5.dp,
+                                color = Secondary,
+                                shape = RoundedCornerShape(10.dp)
+                            ),
+                        shape = RoundedCornerShape(10.dp),
+                        singleLine = false,
+                        maxLines = 4,
+                        textStyle = LocalTextStyle.current.copy(
+                            textAlign = TextAlign.Start,
+                            fontFamily = interRegular,
+                            fontWeight = FontWeight.W400,
+                            fontSize = 14.sp,
+                            letterSpacing = 0.sp
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Secondary,
+                            unfocusedBorderColor = Secondary,
+                            focusedLabelColor = Secondary,
+                            cursorColor = Secondary,
+                            errorBorderColor = Color.Red
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(53.dp),
+                    onClick = { onSaveClick() },
+                    enabled = true,
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Secondary)
+                ) {
+                    Text(text = "Save", fontWeight = FontWeight.W500, fontSize = 16.sp)
+                }
+
+                Spacer(modifier = Modifier.height(40.dp))
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -159,7 +281,7 @@ fun SalarySchemeStep(modifier: Modifier = Modifier, onFinish: () -> Unit) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = {},
+                onClick = { showBottomSheet = true },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp),
@@ -171,7 +293,7 @@ fun SalarySchemeStep(modifier: Modifier = Modifier, onFinish: () -> Unit) {
                     contentDescription = null
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Add Monthly Payment (1/3)")
+                Text(stringResource(R.string.add_monthly_payment_1, selectedPeriod))
             }
 
             Spacer(modifier = Modifier.height(16.dp))

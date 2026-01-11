@@ -49,6 +49,11 @@ enum class AddEmployeeStep {
     SALARY_SCHEME
 }
 
+enum class DatePickerTarget {
+    DOB,
+    PAYMENT_DATE
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEmployeeScreen(
@@ -88,12 +93,12 @@ fun AddEmployeeScreen(
         }
     }
 
-    if (state.showDatePicker) {
+    if (state.showDatePicker && state.datePickerTarget != null) {
 
         val datePickerState = rememberDatePickerState()
 
         DatePickerDialog(
-            onDismissRequest = { viewModel.onShowDatePickerChange(false) },
+            onDismissRequest = { viewModel.closeDatePicker() },
             properties = DialogProperties(
                 usePlatformDefaultWidth = true
             ),
@@ -107,9 +112,17 @@ fun AddEmployeeScreen(
                                 .toLocalDate()
                                 .format(formatter)
 
-                            viewModel.onDobChange(date)
+                            when (state.datePickerTarget) {
+                                DatePickerTarget.DOB ->
+                                    viewModel.onDobChange(date)
+
+                                DatePickerTarget.PAYMENT_DATE ->
+                                    viewModel.onPaymentDateChange(date)
+
+                                else -> {}
+                            }
                         }
-                        viewModel.onShowDatePickerChange(false)
+                        viewModel.closeDatePicker()
                     }
                 ) {
                     Text("OK")
@@ -117,7 +130,7 @@ fun AddEmployeeScreen(
             },
             dismissButton = {
                 TextButton(
-                    onClick = { viewModel.onShowDatePickerChange(false) }
+                    onClick = { viewModel.closeDatePicker() }
                 ) {
                     Text("Cancel")
                 }
@@ -173,7 +186,7 @@ fun AddEmployeeScreen(
                         lastName = state.lastName,
                         onLastNameChange = viewModel::onLastNameChange,
                         dob = state.dob,
-                        onDatePickerClick = { viewModel.onShowDatePickerChange(true) },
+                        onDatePickerClick = { viewModel.onShowDatePickerChange(DatePickerTarget.DOB) },
                         gender = state.gender,
                         onGenderChange = viewModel::onGenderChange,
                         isGenderDropdownOpen = state.isGenderDropdownOpen,
@@ -214,7 +227,13 @@ fun AddEmployeeScreen(
 
                 AddEmployeeStep.SALARY_SCHEME -> {
                     SalarySchemeStep(
-                        onFinish = { /* submit */ }
+                        date = state.paymentDate,
+                        onDatePickerClick = { viewModel.onShowDatePickerChange(DatePickerTarget.PAYMENT_DATE) },
+                        amount = state.amount,
+                        onAmountChange = viewModel::onAmountChange,
+                        remarks = state.remarks,
+                        onRemarksChange = viewModel::onRemarksChange,
+                        onSaveClick = viewModel::onSaveClick
                     )
                 }
             }
