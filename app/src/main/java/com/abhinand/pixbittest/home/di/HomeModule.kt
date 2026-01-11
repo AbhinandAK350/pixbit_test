@@ -1,9 +1,9 @@
 package com.abhinand.pixbittest.home.di
 
+import com.abhinand.pixbittest.core.network.NetworkUtils
 import com.abhinand.pixbittest.home.data.remote.api.HomeApi
 import com.abhinand.pixbittest.home.data.repository.HomeRepositoryImpl
 import com.abhinand.pixbittest.home.domain.repository.HomeRepository
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,17 +13,19 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class HomeModule {
+object HomeModule {
 
-    @Binds
+    @Provides
     @Singleton
-    abstract fun bindHomeRepository(homeRepositoryImpl: HomeRepositoryImpl): HomeRepository
-
-    companion object {
-
-        @Provides
-        @Singleton
-        fun provideHomeApi(retrofit: Retrofit): HomeApi =
-            retrofit.create(HomeApi::class.java)
+    fun provideHomeRepository(
+        api: HomeApi,
+        networkUtils: NetworkUtils
+    ): HomeRepository {
+        return HomeRepositoryImpl(api, networkUtils)
     }
+
+    @Provides
+    @Singleton
+    fun provideHomeApi(retrofit: Retrofit): HomeApi =
+        retrofit.create(HomeApi::class.java)
 }

@@ -1,9 +1,9 @@
 package com.abhinand.pixbittest.register.di
 
+import com.abhinand.pixbittest.core.network.NetworkUtils
 import com.abhinand.pixbittest.register.data.remote.api.RegisterApi
 import com.abhinand.pixbittest.register.data.repository.RegisterRepositoryImpl
 import com.abhinand.pixbittest.register.domain.repository.RegisterRepository
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,19 +13,20 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class RegisterModule {
+object RegisterModule {
 
-    @Binds
+    @Provides
     @Singleton
-    abstract fun bindRegisterRepository(
-        registerRepositoryImpl: RegisterRepositoryImpl
-    ): RegisterRepository
+    fun provideRegisterRepository(
+        api: RegisterApi,
+        networkUtils: NetworkUtils
+    ): RegisterRepository {
+        return RegisterRepositoryImpl(api, networkUtils)
+    }
 
-    companion object {
-        @Provides
-        @Singleton
-        fun provideRegisterApi(retrofit: Retrofit): RegisterApi {
-            return retrofit.create(RegisterApi::class.java)
-        }
+    @Provides
+    @Singleton
+    fun provideRegisterApi(retrofit: Retrofit): RegisterApi {
+        return retrofit.create(RegisterApi::class.java)
     }
 }

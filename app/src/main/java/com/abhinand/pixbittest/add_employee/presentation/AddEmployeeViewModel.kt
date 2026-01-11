@@ -4,8 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.abhinand.pixbittest.add_employee.domain.usecase.GetDesignationUseCase
+import com.abhinand.pixbittest.core.network.NetworkResource
 import com.abhinand.pixbittest.register.domain.valueobject.Email
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -14,12 +17,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
 class AddEmployeeViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val getDesignationUseCase: GetDesignationUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddEmployeeUiState())
@@ -42,6 +47,22 @@ class AddEmployeeViewModel @Inject constructor(
                 )
             }
         }.launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            when (val result = getDesignationUseCase()) {
+                is NetworkResource.Success -> {
+                    _uiState.update {
+                        it.copy(designationOptions = result.data?.map { desig -> desig.name }
+                            ?: emptyList())
+                    }
+                }
+
+                is NetworkResource.Error -> Log.e(
+                    "AddEmployeeViewModel",
+                    "getDesignations: ${result.message}"
+                )
+            }
+        }
     }
 
     fun onCurrentStepChange(step: AddEmployeeStep) {
