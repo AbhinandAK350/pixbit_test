@@ -1,5 +1,6 @@
 package com.abhinand.pixbittest.add_employee.presentation.components.steps
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -44,8 +46,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
 import com.abhinand.pixbittest.R
+import com.abhinand.pixbittest.add_employee.domain.model.Designation
 import com.abhinand.pixbittest.add_employee.presentation.components.StepIndicator
 import com.abhinand.pixbittest.core.theme.Container
 import com.abhinand.pixbittest.core.theme.Primary
@@ -53,10 +57,11 @@ import com.abhinand.pixbittest.core.theme.Secondary
 import com.abhinand.pixbittest.core.theme.interRegular
 import com.abhinand.pixbittest.core.theme.interSemiBold
 import com.abhinand.pixbittest.core.utils.InputType
+import java.io.File
 
 @Composable
 fun BasicDetailsStep(
-    imageUri: Uri?,
+    imageUri: File?,
     onImageClick: () -> Unit,
     onNext: () -> Unit,
     firstName: String,
@@ -71,12 +76,12 @@ fun BasicDetailsStep(
     onGenderDropdownOpenChange: (Boolean) -> Unit,
     genderOptions: List<String>,
     designation: String,
-    onDesignationChange: (String) -> Unit,
+    onDesignationChange: (Designation) -> Unit,
     isDesignationDropdownOpen: Boolean,
     onDesignationDropdownOpenChange: (Boolean) -> Unit,
-    designationOptions: List<String>,
+    designationOptions: List<Designation>,
     isNextButtonEnabled: Boolean,
-    resumeFile: Uri?,
+    resumeFile: File?,
     resumeFileName: String?,
     onResumeClick: () -> Unit,
     onViewResumeClick: () -> Unit
@@ -128,7 +133,7 @@ fun BasicDetailsStep(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        DropdownField(
+        DesignationDropdownField(
             label = "Designation",
             placeholder = "Select One",
             value = designation,
@@ -177,15 +182,16 @@ fun BasicDetailsStep(
 
 @Composable
 fun ProfileImagePicker(
-    imageUri: Uri?,
+    imageUri: File?,
     onImageClick: () -> Unit
 ) {
+    val context = LocalContext.current
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
         AsyncImage(
-            model = imageUri ?: R.drawable.img_employee_placeholder,
+            model = imageUri?.toUri(context) ?: R.drawable.img_employee_placeholder,
             contentDescription = "Profile Image",
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -353,6 +359,98 @@ fun DatePickerField(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
+fun DesignationDropdownField(
+    label: String,
+    placeholder: String,
+    value: String,
+    onValueChange: (Designation) -> Unit,
+    isOpen: Boolean,
+    onOpenChange: (Boolean) -> Unit,
+    options: List<Designation>
+) {
+    Column {
+
+        Text(
+            text = label,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.W600,
+            fontFamily = interSemiBold,
+            color = Primary
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        ExposedDropdownMenuBox(
+            expanded = isOpen,
+            onExpandedChange = onOpenChange
+        ) {
+            val fillMaxWidth = Modifier
+                .fillMaxWidth()
+            OutlinedTextField(
+                value = value,
+                onValueChange = {},
+                modifier = fillMaxWidth.menuAnchor(),
+                readOnly = true,
+                placeholder = {
+                    Text(
+                        text = placeholder,
+                        fontFamily = interRegular,
+                        fontSize = 14.sp,
+                        color = Color(0xFFB1B1B1)
+                    )
+                },
+                trailingIcon = {
+                    Image(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .graphicsLayer {
+                                rotationZ = if (isOpen) 180f else 0f
+                            },
+                        painter = painterResource(R.drawable.ic_dropdown),
+                        contentDescription = null,
+                    )
+                },
+                textStyle = TextStyle(
+                    fontFamily = interRegular,
+                    fontWeight = FontWeight.W400,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.sp,
+                ),
+                shape = RoundedCornerShape(10.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Secondary,
+                    unfocusedBorderColor = Secondary
+                )
+            )
+
+            ExposedDropdownMenu(
+                containerColor = Container,
+                expanded = isOpen,
+                onDismissRequest = { onOpenChange(false) }
+            ) {
+                options.forEach { option ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                option.name, fontFamily = interRegular,
+                                fontWeight = FontWeight.W400,
+                                fontSize = 14.sp,
+                                letterSpacing = 0.sp,
+                            )
+                        },
+                        onClick = {
+                            onValueChange(option)
+                            onOpenChange(false)
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@Composable
 fun DropdownField(
     label: String,
     placeholder: String,
@@ -446,7 +544,7 @@ fun DropdownField(
 @Composable
 fun ResumeSection(
     modifier: Modifier = Modifier,
-    resumeFile: Uri? = null,
+    resumeFile: File? = null,
     resumeFileName: String?,
     onResumeClick: () -> Unit,
     onViewResumeClick: () -> Unit
@@ -525,3 +623,11 @@ fun ResumeSection(
     }
 
 }
+
+fun File.toUri(context: Context): Uri =
+    FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.fileprovider",
+        this
+    )
+

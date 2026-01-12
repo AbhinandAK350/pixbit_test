@@ -1,31 +1,29 @@
 package com.abhinand.pixbittest.add_employee.presentation
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.net.Uri
-import android.provider.OpenableColumns
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.abhinand.pixbittest.add_employee.data.remote.dto.AddEmployeeRequest
+import com.abhinand.pixbittest.add_employee.domain.model.Designation
+import com.abhinand.pixbittest.add_employee.domain.usecase.AddEmployeeUseCase
 import com.abhinand.pixbittest.add_employee.domain.usecase.GetDesignationUseCase
 import com.abhinand.pixbittest.add_employee.presentation.components.steps.PaymentDetail
 import com.abhinand.pixbittest.core.network.NetworkResource
 import com.abhinand.pixbittest.register.domain.valueobject.Email
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
-
 
 @HiltViewModel
 class AddEmployeeViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val getDesignationUseCase: GetDesignationUseCase
+    private val getDesignationUseCase: GetDesignationUseCase,
+    private val addEmployeeUseCase: AddEmployeeUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddEmployeeUiState())
@@ -39,7 +37,8 @@ class AddEmployeeViewModel @Inject constructor(
                             state.lastName.isNotEmpty() &&
                             state.dob.isNotEmpty() &&
                             state.gender.isNotEmpty() &&
-                            state.designation.isNotEmpty(),
+                            state.designation.isNotEmpty() &&
+                            state.resumeFile != null && state.profileImage != null,
                     isContactNextButtonEnabled = state.address.isNotEmpty() &&
                             state.email.isNotEmpty() &&
                             state.isEmailValid &&
@@ -53,8 +52,7 @@ class AddEmployeeViewModel @Inject constructor(
             when (val result = getDesignationUseCase()) {
                 is NetworkResource.Success -> {
                     _uiState.update {
-                        it.copy(designationOptions = result.data?.map { desig -> desig.name }
-                            ?: emptyList())
+                        it.copy(designationOptions = result.data ?: emptyList())
                     }
                 }
 
@@ -70,22 +68,12 @@ class AddEmployeeViewModel @Inject constructor(
         _uiState.update { it.copy(currentStep = step) }
     }
 
-    fun onProfileImageChange(uri: Uri?) {
-        _uiState.update { it.copy(profileImage = uri) }
+    fun onProfileImageChange(file: File?) {
+        _uiState.update { it.copy(profileImage = file) }
     }
 
-    @SuppressLint("Range")
-    fun onResumeFileChange(uri: Uri?) {
-        uri ?: return
-        var fileName = ""
-        val cursor = context.contentResolver.query(uri, null, null, null, null)
-        cursor?.use {
-            if (it.moveToFirst()) {
-                fileName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-            }
-        }
-
-        _uiState.update { it.copy(resumeFile = uri, resumeFileName = fileName) }
+    fun onResumeFileChange(file: File?) {
+        _uiState.update { it.copy(resumeFile = file, resumeFileName = file?.name) }
     }
 
     fun onFirstNameChange(name: String) {
@@ -104,8 +92,14 @@ class AddEmployeeViewModel @Inject constructor(
         _uiState.update { it.copy(gender = gender, isGenderDropdownOpen = false) }
     }
 
-    fun onDesignationChange(designation: String) {
-        _uiState.update { it.copy(designation = designation, isDesignationDropdownOpen = false) }
+    fun onDesignationChange(designation: Designation) {
+        _uiState.update {
+            it.copy(
+                designationId = designation.id,
+                designation = designation.name,
+                isDesignationDropdownOpen = false
+            )
+        }
     }
 
     fun onShowDatePickerChange(datePickerTarget: DatePickerTarget) {
@@ -184,7 +178,38 @@ class AddEmployeeViewModel @Inject constructor(
         }
     }
 
-    fun onSaveClick() {
-
+    fun dismissErrorDialog() {
+        _uiState.value = _uiState.value.copy(errorMessage = null)
     }
+
+    fun onSaveClick(salary: Float, period: Int) {
+        viewModelScope.launch {
+            val addEmployeeRequest = AddEmployeeRequest(
+                first_name = _uiState.value.firstName,
+                last_name = _uiState.value.lastName,
+                date_of_birth = _uiState.value.dob,
+                designationId = _uiState.value.designationId,
+                gender = _uiState.value.gender,
+                mobile_number = _uiState.value.mobileNumber,
+                email = _uiState.value.email,
+                address = _uiState.value.address,
+                profile_pic = _uiState.value.profileImage,
+                resume = _uiState.value.resumeFile,
+                contract_period = period,
+                total_salary = salary.toDouble(),
+                monthly_payments = _uiState.value.paymentDetails
+            )
+
+            Log.e("AddEmployeeViewModel", "onSaveClick: $addEmployeeRequest")
+
+            when (val result = addEmployeeUseCase(addEmployeeRequest)) {
+                is NetworkResource.Success -> {}
+                is NetworkResource.Error -> {
+                    _uiState.value = _uiState.value.copy(errorMessage = result.message)
+                    Log.e("AddEmployeeViewModel", "onSaveClick: ${result.message}")
+                }
+            }
+        }
+    }
+
 }

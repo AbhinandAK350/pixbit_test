@@ -1,7 +1,10 @@
 package com.abhinand.pixbittest.add_employee.presentation
 
+import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -36,10 +39,13 @@ import com.abhinand.pixbittest.R
 import com.abhinand.pixbittest.add_employee.presentation.components.steps.BasicDetailsStep
 import com.abhinand.pixbittest.add_employee.presentation.components.steps.ContactDetailsStep
 import com.abhinand.pixbittest.add_employee.presentation.components.steps.SalarySchemeStep
+import com.abhinand.pixbittest.add_employee.presentation.components.steps.toUri
+import com.abhinand.pixbittest.core.components.ErrorAlert
 import com.abhinand.pixbittest.core.navigation.Action
 import com.abhinand.pixbittest.core.theme.Container
 import com.abhinand.pixbittest.core.theme.Primary
 import com.abhinand.pixbittest.core.utils.Util.toMillisOrNull
+import java.io.File
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -55,6 +61,28 @@ enum class DatePickerTarget {
     PAYMENT_DATE
 }
 
+fun Uri.toFile(context: Context): File {
+    val resolver = context.contentResolver
+    val fileName = queryFileName(resolver) ?: "temp_file"
+    val tempFile = File(context.cacheDir, fileName)
+
+    resolver.openInputStream(this)?.use { input ->
+        tempFile.outputStream().use { output ->
+            input.copyTo(output)
+        }
+    } ?: throw IllegalArgumentException("Unable to open URI input stream")
+
+    return tempFile
+}
+
+private fun Uri.queryFileName(resolver: ContentResolver): String? {
+    return resolver.query(this, null, null, null, null)?.use { cursor ->
+        val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        if (index != -1 && cursor.moveToFirst()) cursor.getString(index) else null
+    }
+}
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEmployeeScreen(
@@ -66,16 +94,20 @@ fun AddEmployeeScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
+    if (state.errorMessage != null) {
+        ErrorAlert(state.errorMessage ?: "Unknown error") { viewModel.dismissErrorDialog() }
+    }
+
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        viewModel.onProfileImageChange(uri)
+        viewModel.onProfileImageChange(uri?.toFile(context))
     }
 
     val resumePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        viewModel.onResumeFileChange(uri)
+        viewModel.onResumeFileChange(uri?.toFile(context))
     }
 
     BackHandler {
@@ -214,7 +246,10 @@ fun AddEmployeeScreen(
                         onResumeClick = { resumePickerLauncher.launch("application/pdf") },
                         onViewResumeClick = {
                             val intent = Intent(Intent.ACTION_VIEW)
-                            intent.setDataAndType(state.resumeFile, "application/pdf")
+                            intent.setDataAndType(
+                                state.resumeFile?.toUri(context),
+                                "application/pdf"
+                            )
                             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             context.startActivity(intent)
                         }
@@ -238,6 +273,7 @@ fun AddEmployeeScreen(
 
                 AddEmployeeStep.SALARY_SCHEME -> {
                     SalarySchemeStep(
+                        isLoading = state.isLoading,
                         date = state.paymentDate,
                         onDatePickerClick = { viewModel.onShowDatePickerChange(DatePickerTarget.PAYMENT_DATE) },
                         amount = state.amount,

@@ -3,7 +3,4 @@ package com.abhinand.pixbittest.add_employee.data.remote.dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DesignationDto(
-    val id: Int,
-    val name: String,
-)
+data class AddEmployeeResponseDto(val message: String? = null)

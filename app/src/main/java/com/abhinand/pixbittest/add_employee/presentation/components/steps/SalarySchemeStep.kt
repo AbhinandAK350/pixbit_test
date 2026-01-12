@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
@@ -75,13 +76,14 @@ data class PaymentDetail(
 @Composable
 fun SalarySchemeStep(
     modifier: Modifier = Modifier,
+    isLoading: Boolean,
     date: String,
     onDatePickerClick: () -> Unit,
     amount: String,
     onAmountChange: (String) -> Unit,
     remarks: String,
     onRemarksChange: (String) -> Unit,
-    onSaveClick: () -> Unit,
+    onSaveClick: (Float, Int) -> Unit,
     paymentDetails: List<PaymentDetail>,
     onPaymentDetailsChange: (PaymentDetail) -> Unit,
     onClearPaymentDetails: () -> Unit,
@@ -412,11 +414,19 @@ fun SalarySchemeStep(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(53.dp),
-                    onClick = { onSaveClick() },
+                    onClick = { onSaveClick(salary, selectedPeriod) },
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Secondary)
                 ) {
-                    Text(text = "Save", fontWeight = FontWeight.W500, fontSize = 16.sp)
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            strokeWidth = 3.dp,
+                            modifier = Modifier.size(24.dp),
+                            color = Color.White
+                        )
+                    } else {
+                        Text(text = "Save", fontWeight = FontWeight.W500, fontSize = 16.sp)
+                    }
                 }
             }
 
