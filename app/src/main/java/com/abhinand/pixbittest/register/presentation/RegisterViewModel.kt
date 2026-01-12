@@ -2,7 +2,10 @@ package com.abhinand.pixbittest.register.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.abhinand.pixbittest.core.navigation.Action
+import com.abhinand.pixbittest.core.navigation.Screen
 import com.abhinand.pixbittest.core.network.NetworkResource
+import com.abhinand.pixbittest.login.domain.usecase.SaveTokenUseCase
 import com.abhinand.pixbittest.register.domain.usecase.RegisterUseCase
 import com.abhinand.pixbittest.register.domain.valueobject.Email
 import com.abhinand.pixbittest.register.domain.valueobject.Name
@@ -15,8 +18,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RegisterViewModel @Inject constructor(private val registerUseCase: RegisterUseCase) :
-    ViewModel() {
+class RegisterViewModel @Inject constructor(
+    private val registerUseCase: RegisterUseCase,
+    private val saveTokenUseCase: SaveTokenUseCase,
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState = _uiState.asStateFlow()
@@ -94,7 +99,7 @@ class RegisterViewModel @Inject constructor(private val registerUseCase: Registe
         _uiState.update { it.copy(confirmPasswordTouched = true) }
     }
 
-    fun onRegisterButtonClick() {
+    fun onRegisterButtonClick(onNavigate: (Action) -> Unit) {
         viewModelScope.launch {
 
             _uiState.update { it.copy(isLoading = true) }
@@ -109,7 +114,12 @@ class RegisterViewModel @Inject constructor(private val registerUseCase: Registe
             _uiState.update { it.copy(isLoading = false) }
 
             when (result) {
-                is NetworkResource.Success -> {}
+                is NetworkResource.Success -> {
+                    result.data?.token?.let {
+                        saveTokenUseCase(it)
+                        onNavigate(Action.Push(Screen.Home, clearStack = true))
+                    }
+                }
                 is NetworkResource.Error -> {
                     _uiState.update { it.copy(errorMessage = result.message) }
                 }

@@ -5,7 +5,7 @@ value class Password private constructor(val value: String) {
 
     companion object {
         private val REGEX =
-            Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@!?_]).{5,}$")
+            Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@!?_]).{8,}$")
 
         fun create(input: String): Result<Password> =
             if (REGEX.matches(input)) {

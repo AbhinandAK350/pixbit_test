@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class RegisterResponseDto(
     val access_token: String? = null,
     val error: String? = null,
-    val email: String
+    val email: String? = null,
+    val password: String? = null
 )

@@ -220,7 +220,7 @@ fun RegisterScreen(
 
             if (!state.isPasswordValid && state.passwordTouched) {
                 Text(
-                    text = "Password must be at least 5 characters and include uppercase, lowercase, a number, and one special character (@ ! ? _)",
+                    text = "Password must be at least 8 characters and include uppercase, lowercase, a number, and one special character (@ ! ? _)",
                     color = Color.Red,
                     fontSize = 12.sp
                 )
@@ -287,7 +287,7 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
-                onClick = { if (!state.isLoading) viewModel.onRegisterButtonClick() },
+                onClick = { if (!state.isLoading) viewModel.onRegisterButtonClick(onNavigate = onNavigate) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
