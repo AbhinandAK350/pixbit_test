@@ -32,31 +32,21 @@ class HomeViewModel @Inject constructor(
     }
 
     fun fetchNextPage() {
-        if (_uiState.value.isLoading || _uiState.value.endReached) return
+        val state = _uiState.value
+        if (state.isLoading || state.endReached) return
 
-        fetchJob?.cancel()
-        fetchJob = viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
 
-            when (val result = getEmployeeListUseCase(_uiState.value.page)) {
+            when (val result = getEmployeeListUseCase(state.page)) {
                 is NetworkResource.Success -> {
-                    val response = result.data
-
-                    if (response == null || response.employees.isEmpty()) {
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                endReached = true
-                            )
-                        }
-                        return@launch
-                    }
+                    val response = result.data ?: return@launch
 
                     _uiState.update {
                         it.copy(
                             employees = it.employees + response.employees,
                             page = it.page + 1,
-                            endReached = it.page + 1 > response.meta.total,
+                            endReached = response.employees.isEmpty(),
                             isLoading = false
                         )
                     }

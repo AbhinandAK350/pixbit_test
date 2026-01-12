@@ -54,16 +54,19 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
 
-    val shouldLoadMore by remember {
+    val shouldLoadNextPage by remember {
         derivedStateOf {
-            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-            val totalItems = listState.layoutInfo.totalItemsCount
-            lastVisibleItem != null && lastVisibleItem >= totalItems - 3
+            val layoutInfo = listState.layoutInfo
+            val lastVisibleItemIndex =
+                layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: return@derivedStateOf false
+
+            lastVisibleItemIndex == layoutInfo.totalItemsCount - 1 &&
+                    listState.isScrollInProgress
         }
     }
 
-    LaunchedEffect(shouldLoadMore) {
-        if (shouldLoadMore) {
+    LaunchedEffect(shouldLoadNextPage) {
+        if (shouldLoadNextPage) {
             viewModel.fetchNextPage()
         }
     }
@@ -158,7 +161,7 @@ fun HomeScreen(
                                     .padding(16.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                CircularProgressIndicator()
+                                CircularProgressIndicator(color = Secondary)
                             }
                         }
                     }
