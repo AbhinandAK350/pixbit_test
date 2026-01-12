@@ -1,8 +1,14 @@
 package com.abhinand.pixbittest.profile_details.presentation
 
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,9 +42,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -59,6 +67,8 @@ fun ProfileDetailsScreen(
     onNavigate: (Action) -> Unit,
     employee: Employee
 ) {
+
+    val context: Context = LocalContext.current
 
     Scaffold(topBar = {
         TopAppBar(
@@ -114,7 +124,9 @@ fun ProfileDetailsScreen(
             }
 
             item {
-                ResumeCard()
+                ResumeCard(lastUpdated = employee.createdAt, onViewClick = {
+                    openPdfFromUrl(context, employee.resume ?: "")
+                })
                 Spacer(modifier = modifier.height(24.dp))
             }
 
@@ -206,7 +218,7 @@ private fun ContactInfoCard(
 
             TwoColumnRow(
                 leftTitle = stringResource(R.string.contact_number),
-                leftValue = phone,
+                leftValue = "+91 $phone",
                 rightTitle = stringResource(R.string.email),
                 rightValue = email
             )
@@ -288,13 +300,16 @@ private fun InfoColumn(
             fontWeight = FontWeight.W400,
             fontFamily = interRegular,
             letterSpacing = 0.sp,
-            color = Color(0xFF2A5277)
+            color = Color(0xFF2A5277),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            softWrap = false
         )
     }
 }
 
 @Composable
-private fun ResumeCard() {
+private fun ResumeCard(onViewClick: () -> Unit, lastUpdated: String) {
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -318,14 +333,14 @@ private fun ResumeCard() {
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Resume File",
+                    text = stringResource(R.string.resume_file),
                     fontWeight = FontWeight.W600,
                     fontFamily = interSemiBold,
                     letterSpacing = 0.sp,
                     fontSize = 14.sp
                 )
                 Text(
-                    text = "Updated 01-01-2020",
+                    text = "Updated $lastUpdated",
                     fontSize = 12.sp,
                     fontFamily = interRegular,
                     letterSpacing = 0.sp,
@@ -338,9 +353,10 @@ private fun ResumeCard() {
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color(0xFFE2F1FF))
                     .padding(horizontal = 8.dp, vertical = 7.dp)
+                    .clickable(onClick = { onViewClick() })
             ) {
                 Text(
-                    text = "View",
+                    text = stringResource(R.string.view),
                     fontSize = 14.sp,
                     color = Secondary,
                     fontWeight = FontWeight.W400,
@@ -452,5 +468,26 @@ fun SalaryMonthCard(
                 }
             }
         }
+    }
+}
+
+fun openPdfFromUrl(context: Context, pdfUrl: String) {
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(
+            Uri.parse(pdfUrl),
+            "application/pdf"
+        )
+        flags = Intent.FLAG_ACTIVITY_NO_HISTORY or
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+    }
+
+    try {
+        context.startActivity(intent)
+    } catch (e: ActivityNotFoundException) {
+        Toast.makeText(
+            context,
+            "No PDF viewer installed",
+            Toast.LENGTH_LONG
+        ).show()
     }
 }
