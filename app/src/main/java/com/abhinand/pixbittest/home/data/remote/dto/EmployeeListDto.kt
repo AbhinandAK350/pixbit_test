@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class EmployeeListDto(
-    val data: List<EmployeeDto>
+    val data: List<EmployeeDto>,
+    val meta: Meta
 )
 
 @Serializable
@@ -35,4 +36,9 @@ data class MonthlyPaymentDto(
     val amount_percentage: Int,
     val remarks: String?,
     val created_at: String
+)
+
+@Serializable
+data class Meta(
+    val total: Int
 )

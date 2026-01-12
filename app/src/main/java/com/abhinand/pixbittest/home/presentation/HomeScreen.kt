@@ -21,9 +21,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abhinand.pixbittest.R
 import com.abhinand.pixbittest.core.navigation.Action
 import com.abhinand.pixbittest.core.navigation.Screen
@@ -48,88 +51,119 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
 
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchEmployeeList()
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+            val totalItems = listState.layoutInfo.totalItemsCount
+            lastVisibleItem != null && lastVisibleItem >= totalItems - 3
+        }
     }
 
-    Scaffold(topBar = {
-        TopAppBar(title = {
-            Text(
-                modifier = Modifier.padding(start = 24.dp),
-                text = stringResource(R.string.employees),
-                fontSize = 20.sp,
-                fontFamily = interMedium,
-                color = Primary
-            )
-        }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Container))
-    }, floatingActionButton = {
-        FloatingActionButton(
-            modifier = modifier
-                .padding(bottom = 30.dp, end = 20.dp)
-                .size(58.dp),
-            onClick = { onNavigate(Action.Push(Screen.AddEmployee)) },
-            shape = CircleShape,
-            containerColor = Secondary
-        ) {
-            Icon(
-                modifier = Modifier.size(40.dp),
-                imageVector = Icons.Outlined.Add,
-                contentDescription = null,
-                tint = Color.White
-            )
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore) {
+            viewModel.fetchNextPage()
         }
-    }, containerColor = Color(0xFFFBFDFF)) { contentPadding ->
+    }
 
-        if (uiState.isLoading && uiState.employees.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = Secondary)
-            }
-        } else if (!uiState.isLoading && uiState.error != null) {
-            Box(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(contentPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(uiState.error ?: "Unknown error occurred")
-            }
-        } else {
-            LazyColumn(
-                state = listState,
-                modifier = modifier.padding(top = contentPadding.calculateTopPadding()),
-                contentPadding = PaddingValues(vertical = 15.dp)
-            ) {
-                items(
-                    items = uiState.employees
-                ) { employee ->
-                    EmployeeItem(
-                        employeeImageUrl = employee.profilePicUrl.orEmpty(),
-                        name = "${employee.firstName} ${employee.lastName}",
-                        phone = employee.mobileNumber,
-                        onItemClick = {
-                            onNavigate(Action.Push(Screen.ProfileDetails(employee)))
-                        }
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.fetchFirstPage()
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        modifier = Modifier.padding(start = 24.dp),
+                        text = stringResource(R.string.employees),
+                        fontSize = 20.sp,
+                        fontFamily = interMedium,
+                        color = Primary
                     )
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Container)
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                modifier = modifier
+                    .padding(bottom = 30.dp, end = 20.dp)
+                    .size(58.dp),
+                onClick = { onNavigate(Action.Push(Screen.AddEmployee)) },
+                shape = CircleShape,
+                containerColor = Secondary
+            ) {
+                Icon(
+                    modifier = Modifier.size(40.dp),
+                    imageVector = Icons.Outlined.Add,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+        },
+        containerColor = Color(0xFFFBFDFF)
+    ) { contentPadding ->
 
-                item {
+        when {
+            uiState.isLoading && uiState.employees.isEmpty() -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Secondary)
+                }
+            }
+
+            uiState.error != null && uiState.employees.isEmpty() -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(contentPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(uiState.error ?: "Something went wrong")
+                }
+            }
+
+            else -> {
+                LazyColumn(
+                    state = listState,
+                    modifier = modifier.padding(top = contentPadding.calculateTopPadding()),
+                    contentPadding = PaddingValues(vertical = 16.dp)
+                ) {
+                    items(
+                        items = uiState.employees,
+                        key = { it.id }
+                    ) { employee ->
+                        EmployeeItem(
+                            employeeImageUrl = employee.profilePicUrl.orEmpty(),
+                            name = "${employee.firstName} ${employee.lastName}",
+                            phone = employee.mobileNumber,
+                            onItemClick = {
+                                onNavigate(Action.Push(Screen.ProfileDetails(employee)))
+                            }
+                        )
+                    }
+
                     if (uiState.isLoading) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
                         }
                     }
                 }
             }
         }
-
     }
-
 }
