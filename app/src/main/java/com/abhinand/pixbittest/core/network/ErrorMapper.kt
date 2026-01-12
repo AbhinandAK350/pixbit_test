@@ -40,10 +40,13 @@ val json = Json {
     isLenient = true
 }
 
-fun HttpException.parseErrorBody(): ApiErrorResponse? {
+fun HttpException.parseErrorBody(): String? {
+    val errorJson = response()?.errorBody()?.string() ?: return null
     return runCatching {
-        val errorJson = response()?.errorBody()?.string() ?: return null
-        json.decodeFromString<ApiErrorResponse>(errorJson)
+        json.decodeFromString<ApiErrorResponse>(errorJson).error
+    }.getOrNull() ?: runCatching {
+        val errors = json.decodeFromString<Map<String, List<String>>>(errorJson)
+        errors.values.firstOrNull()?.firstOrNull()
     }.getOrNull()
 }
 
@@ -51,5 +54,3 @@ fun HttpException.parseErrorBody(): ApiErrorResponse? {
 data class ApiErrorResponse(
     val error: String?,
 )
-
-

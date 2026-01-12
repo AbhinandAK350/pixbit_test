@@ -42,7 +42,7 @@ class AddEmployeeRepositoryImpl @Inject constructor(
             Log.e("RegisterRepositoryImpl", "register: ", e)
             val errorMessage = when (e) {
                 is HttpException -> {
-                    e.parseErrorBody()?.error
+                    e.parseErrorBody()
                         ?: e.toNetworkError().toUserMessage()
                 }
 
@@ -85,7 +85,7 @@ class AddEmployeeRepositoryImpl @Inject constructor(
             Log.e("AddEmployeeRepository", "add: ", e)
             val message = when (e) {
                 is HttpException ->
-                    e.parseErrorBody()?.error
+                    e.parseErrorBody()
                         ?: e.toNetworkError().toUserMessage()
 
                 else ->

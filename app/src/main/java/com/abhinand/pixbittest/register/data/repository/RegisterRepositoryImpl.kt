@@ -33,7 +33,7 @@ class RegisterRepositoryImpl @Inject constructor(
             Log.e("RegisterRepositoryImpl", "register: ", e)
             val errorMessage = when (e) {
                 is HttpException -> {
-                    e.parseErrorBody()?.error
+                    e.parseErrorBody()
                         ?: e.toNetworkError().toUserMessage()
                 }
 
