@@ -59,30 +59,24 @@ class AddEmployeeRepositoryImpl @Inject constructor(
         }
 
         return try {
-            val profilePicPart = addEmployeeRequest.profile_pic
-                ?: return NetworkResource.Error("Profile picture required")
-
-            val resumePart = addEmployeeRequest.resume
-                ?: return NetworkResource.Error("Resume required")
-
-            val parts = mutableMapOf<String, RequestBody>().apply {
-                put("first_name", addEmployeeRequest.first_name.toRequestBody())
-                put("last_name", addEmployeeRequest.last_name.toRequestBody())
-                put("date_of_birth", addEmployeeRequest.date_of_birth.toRequestBody())
-                put("designation", addEmployeeRequest.designationId.toRequestBody())
-                put("gender", addEmployeeRequest.gender.toRequestBody())
-                put("mobile_number", addEmployeeRequest.mobile_number.toRequestBody())
-                put("email", addEmployeeRequest.email.toRequestBody())
-                put("address", addEmployeeRequest.address.toRequestBody())
-                put("contract_period", addEmployeeRequest.contract_period.toRequestBody())
-                put("total_salary", addEmployeeRequest.total_salary.toRequestBody())
-                putAll(buildMonthlyPaymentsParts(addEmployeeRequest.monthly_payments))
-            }
 
             api.addEmployee(
-                parts = parts,
-                profile_pic = profilePicPart.toMultipart("profile_pic"),
-                resume = resumePart.toMultipart("resume")
+                firstName = addEmployeeRequest.first_name.toRequestBody(),
+                lastName = addEmployeeRequest.last_name.toRequestBody(),
+                dateOfBirth = addEmployeeRequest.date_of_birth.toRequestBody(),
+                designation = addEmployeeRequest.designationId.toString().toRequestBody(),
+                gender = addEmployeeRequest.gender.toRequestBody(),
+                mobileNumber = addEmployeeRequest.mobile_number.toRequestBody(),
+                email = addEmployeeRequest.email.toRequestBody(),
+                address = addEmployeeRequest.address.toRequestBody(),
+
+                profilePic = addEmployeeRequest.profile_pic!!.toMultipart("profile_pic"),
+                resume = addEmployeeRequest.resume!!.toMultipart("resume"),
+
+                contractPeriod = addEmployeeRequest.contract_period.toString().toRequestBody(),
+                totalSalary = addEmployeeRequest.total_salary.toString().toRequestBody(),
+
+                monthlyPayments = addEmployeeRequest.monthly_payments.toMultipartMap()
             )
 
             NetworkResource.Success(Unit)
@@ -103,40 +97,32 @@ class AddEmployeeRepositoryImpl @Inject constructor(
 }
 
 fun String.toRequestBody(): RequestBody =
-    toRequestBody("text/plain".toMediaType())
-
-fun Int.toRequestBody(): RequestBody =
-    toString().toRequestBody("text/plain".toMediaType())
-
-fun Double.toRequestBody(): RequestBody =
-    toString().toRequestBody("text/plain".toMediaType())
+    this.toRequestBody("text/plain".toMediaType())
 
 fun File.toMultipart(key: String): MultipartBody.Part =
     MultipartBody.Part.createFormData(
-        key,
-        name,
-        asRequestBody("multipart/form-data".toMediaType())
+        name = key,
+        filename = name,
+        body = asRequestBody("application/octet-stream".toMediaType())
     )
 
-fun buildMonthlyPaymentsParts(
-    payments: List<PaymentDetail>
-): Map<String, RequestBody> {
-
+fun List<PaymentDetail>.toMultipartMap(): Map<String, RequestBody> {
     val map = mutableMapOf<String, RequestBody>()
 
-    payments.forEachIndexed { index, payment ->
+    forEachIndexed { index, item ->
         map["monthly_payments[$index][payment_date]"] =
-            payment.date.toRequestBody()
+            item.date.toRequestBody()
 
         map["monthly_payments[$index][amount_percentage]"] =
-            payment.amountPercentage.toDouble().toRequestBody()
+            item.amountPercentage.toString().toRequestBody()
 
         map["monthly_payments[$index][remarks]"] =
-            payment.remarks.toRequestBody()
+            item.remarks.toRequestBody()
 
         map["monthly_payments[$index][amount]"] =
-            payment.amount.toDouble().toRequestBody()
+            item.amount.toString().toRequestBody()
     }
 
     return map
 }
+

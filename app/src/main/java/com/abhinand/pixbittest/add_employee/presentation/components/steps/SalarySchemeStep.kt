@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.abhinand.pixbittest.R
 import com.abhinand.pixbittest.add_employee.presentation.components.StepIndicator
+import com.abhinand.pixbittest.core.navigation.Action
 import com.abhinand.pixbittest.core.theme.Container
 import com.abhinand.pixbittest.core.theme.Primary
 import com.abhinand.pixbittest.core.theme.Secondary
@@ -83,7 +84,8 @@ fun SalarySchemeStep(
     onAmountChange: (String) -> Unit,
     remarks: String,
     onRemarksChange: (String) -> Unit,
-    onSaveClick: (Float, Int) -> Unit,
+    onSaveClick: (Float, Int, onNavigate: (Action) -> Unit) -> Unit,
+    onNavigate: (Action) -> Unit,
     paymentDetails: List<PaymentDetail>,
     onPaymentDetailsChange: (PaymentDetail) -> Unit,
     onClearPaymentDetails: () -> Unit,
@@ -221,12 +223,11 @@ fun SalarySchemeStep(
                             remarks = remarks
                         )
                         onPaymentDetailsChange(newPayment)
-//                        paymentDetails = paymentDetails + newPayment
                         showBottomSheet = false
                         onAmountChange("")
                         onRemarksChange("")
                     },
-                    enabled = date.isNotEmpty() && amount.isNotEmpty() && (amount.toFloatOrNull()
+                    enabled = date.isNotEmpty() && amount.isNotEmpty() && remarks.isNotEmpty() && (amount.toFloatOrNull()
                         ?: 0f) <= remainingPercentage && isFutureDate(
                         date,
                         paymentDetails.lastOrNull()?.date
@@ -311,7 +312,7 @@ fun SalarySchemeStep(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Total Salary",
+                    text = stringResource(R.string.total_salary),
                     fontSize = 14.sp,
                     fontFamily = interSemiBold,
                     fontWeight = FontWeight.W600
@@ -414,7 +415,7 @@ fun SalarySchemeStep(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(53.dp),
-                    onClick = { onSaveClick(salary, selectedPeriod) },
+                    onClick = { if (!isLoading) onSaveClick(salary, selectedPeriod, onNavigate) },
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Secondary)
                 ) {

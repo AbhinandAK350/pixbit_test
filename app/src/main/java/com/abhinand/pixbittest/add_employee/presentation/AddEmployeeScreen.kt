@@ -149,7 +149,7 @@ fun AddEmployeeScreen(
                 TextButton(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
-                            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                             val date = Instant.ofEpochMilli(millis)
                                 .atZone(ZoneId.systemDefault())
                                 .toLocalDate()
@@ -284,7 +284,8 @@ fun AddEmployeeScreen(
                         paymentDetails = state.paymentDetails,
                         onPaymentDetailsChange = viewModel::onPaymentDetailsChange,
                         onClearPaymentDetails = viewModel::onClearPaymentDetails,
-                        onDeletePaymentDetail = viewModel::onDeletePaymentDetail
+                        onDeletePaymentDetail = viewModel::onDeletePaymentDetail,
+                        onNavigate = onNavigate
                     )
                 }
             }

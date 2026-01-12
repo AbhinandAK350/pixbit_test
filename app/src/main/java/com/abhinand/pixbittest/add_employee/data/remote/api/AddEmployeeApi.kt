@@ -1,6 +1,5 @@
 package com.abhinand.pixbittest.add_employee.data.remote.api
 
-import com.abhinand.pixbittest.add_employee.data.remote.dto.AddEmployeeResponseDto
 import com.abhinand.pixbittest.add_employee.data.remote.dto.DesignationDto
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -18,9 +17,22 @@ interface AddEmployeeApi {
     @Multipart
     @POST("employees")
     suspend fun addEmployee(
-        @PartMap parts: Map<String, @JvmSuppressWildcards RequestBody>,
-        @Part profile_pic: MultipartBody.Part,
-        @Part resume: MultipartBody.Part
-    ): AddEmployeeResponseDto
+        @Part("first_name") firstName: RequestBody,
+        @Part("last_name") lastName: RequestBody,
+        @Part("date_of_birth") dateOfBirth: RequestBody,
+        @Part("designation") designation: RequestBody,
+        @Part("gender") gender: RequestBody,
+        @Part("mobile_number") mobileNumber: RequestBody,
+        @Part("email") email: RequestBody,
+        @Part("address") address: RequestBody,
+
+        @Part profilePic: MultipartBody.Part,
+        @Part resume: MultipartBody.Part,
+
+        @Part("contract_period") contractPeriod: RequestBody,
+        @Part("total_salary") totalSalary: RequestBody,
+
+        @PartMap monthlyPayments: Map<String, @JvmSuppressWildcards RequestBody>
+    )
 
 }

@@ -8,6 +8,8 @@ import com.abhinand.pixbittest.add_employee.domain.model.Designation
 import com.abhinand.pixbittest.add_employee.domain.usecase.AddEmployeeUseCase
 import com.abhinand.pixbittest.add_employee.domain.usecase.GetDesignationUseCase
 import com.abhinand.pixbittest.add_employee.presentation.components.steps.PaymentDetail
+import com.abhinand.pixbittest.core.navigation.Action
+import com.abhinand.pixbittest.core.navigation.Screen
 import com.abhinand.pixbittest.core.network.NetworkResource
 import com.abhinand.pixbittest.register.domain.valueobject.Email
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -182,8 +184,10 @@ class AddEmployeeViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(errorMessage = null)
     }
 
-    fun onSaveClick(salary: Float, period: Int) {
+    fun onSaveClick(salary: Float, period: Int, onNavigate: (Action) -> Unit) {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+
             val addEmployeeRequest = AddEmployeeRequest(
                 first_name = _uiState.value.firstName,
                 last_name = _uiState.value.lastName,
@@ -200,10 +204,15 @@ class AddEmployeeViewModel @Inject constructor(
                 monthly_payments = _uiState.value.paymentDetails
             )
 
+            _uiState.update { it.copy(isLoading = false) }
+
             Log.e("AddEmployeeViewModel", "onSaveClick: $addEmployeeRequest")
 
             when (val result = addEmployeeUseCase(addEmployeeRequest)) {
-                is NetworkResource.Success -> {}
+                is NetworkResource.Success -> {
+                    onNavigate(Action.Push(Screen.Home, clearStack = true))
+                }
+
                 is NetworkResource.Error -> {
                     _uiState.value = _uiState.value.copy(errorMessage = result.message)
                     Log.e("AddEmployeeViewModel", "onSaveClick: ${result.message}")
