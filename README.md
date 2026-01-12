@@ -1,55 +1,90 @@
-# Pixbit Test
+# Pixbit Android Machine Test
 
-This is an Android application built using modern Android development practices. The app allows
-users to register, log in, and view a list of employees. It also has features to add new employees
-and view employee details.
+Pixbit is a modern Android application developed as part of a technical assessment. The project demonstrates end-to-end Android development practices, including authentication, paginated data handling, form submissions, and a modular clean architecture setup.
 
-## Features
+The application was built entirely from scratch based on the provided requirements and designs, with a strong focus on scalability, maintainability, and modern Android standards.
 
-* **User Registration:** New users can create an account.
-* **User Login:** Existing users can log in to their accounts.
-* **Employee List:** View a paginated list of employees.
-* **Add Employee:** Add a new employee to the list.
-* **Employee Details:** View detailed information about a specific employee.
+---
 
-## Architecture
+## 📱 Application Overview
 
-The app follows the MVVM (Model-View-ViewModel) architecture pattern with a clean architecture
-approach. The code is organized into feature modules.
+The app allows users to:
 
-* **`core`:** Contains the base classes and utilities used across the app, including networking,
-  navigation, and theme.
-* **`register`:** Handles user registration.
-* **`login`:** Manages user login.
-* **`home`:** Displays the list of employees.
-* **`add_employee`:**  Handles the addition of new employees.
-* **`profile_details`:** Shows the details of an employee.
+- Register and authenticate
+- View a paginated list of employees
+- Add new employees
+- View detailed employee profiles
 
-## Tech Stack
+---
 
-* **[Kotlin](https://kotlinlang.org/)**: The programming language used.
-* **[Jetpack Compose](https://developer.android.com/jetpack/compose)**: For building the UI.
-* **[ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel)**: To manage
-  UI-related data in a lifecycle-conscious way.
-* **[Hilt](https://dagger.dev/hilt/)**: For dependency injection.
-* **[Retrofit](https://square.github.io/retrofit/)**: For making HTTP requests to the API.
-* **[Kotlinx Serialization](https://github.com/Kotlin/kotlinx.serialization)**: For JSON
-  serialization and deserialization.
-* **[Coil](https://coil-kt.github.io/coil/)**: For image loading.
-* **[DataStore](https://developer.android.com/topic/libraries/architecture/datastore)**: For storing
-  simple key-value pairs.
-* **[Navigation 3](https://developer.android.com/guide/navigation/navigation-3)**: For navigating
-  between screens.
+## ✨ Features
 
-## API
+### Authentication
+- User Registration with validation
+- User Login with persisted session handling
 
-The app communicates with a backend API with the base URL:
-`https://machine-test-cn1pkjyu.on-forge.com/api/`.
+### Employee Management
+- Employee List with pagination
+- Add Employee using form-based submission
+- Employee Details screen with full profile information
 
-## Build
+---
 
-To build the app, you can use Android Studio or the following Gradle command:
+## 🏗 Architecture
+
+The project follows **MVVM with Clean Architecture**, ensuring a clear separation of concerns and testable components.
+
+### Module Structure
+
+- **core**
+  - Networking configuration
+  - Dependency injection
+  - Navigation setup
+  - Theme and design system
+  - Shared utilities
+- **register**
+  - User registration flow
+- **login**
+  - Authentication and session management
+- **home**
+  - Employee listing and pagination
+- **add_employee**
+  - Employee creation flow
+- **profile_details**
+  - Employee detail view
+
+Each feature module is self-contained and communicates through well-defined interfaces.
+
+---
+
+## 🧰 Tech Stack
+
+- Kotlin
+- Jetpack Compose
+- ViewModel and StateFlow
+- Hilt
+- Retrofit
+- Kotlinx Serialization
+- Coil
+- DataStore
+- Navigation 3
+
+---
+
+## 🌐 API Configuration
+
+Base URL:
+
+https://machine-test-cn1pkjyu.on-forge.com/api/
+
+
+The base URL is configured in the networking layer and can be easily replaced for different environments.
+
+---
+
+## 🛠 Build Instructions
+
+Build the debug APK using:
 
 ```bash
 ./gradlew assembleDebug
-```
