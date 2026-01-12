@@ -35,4 +35,5 @@
     <string name="view">View</string>
     <string name="resume_file">Resume File</string>
     <string name="total_salary">Total Salary</string>
+    <string name="remaining">Remaining</string>
 </resources>

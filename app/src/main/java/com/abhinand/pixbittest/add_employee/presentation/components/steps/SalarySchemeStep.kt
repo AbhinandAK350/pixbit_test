@@ -61,10 +61,10 @@ import com.abhinand.pixbittest.core.theme.Secondary
 import com.abhinand.pixbittest.core.theme.interMedium
 import com.abhinand.pixbittest.core.theme.interRegular
 import com.abhinand.pixbittest.core.theme.interSemiBold
-import com.abhinand.pixbittest.profile_details.presentation.SalaryMonthCard
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.abhinand.pixbittest.core.utils.InputType
+import com.abhinand.pixbittest.profile_details.SalaryMonthCard
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 data class PaymentDetail(
     val date: String,
@@ -153,6 +153,7 @@ fun SalarySchemeStep(
                     label = "Amount %",
                     placeholder = "Enter amount percentage",
                     value = amount,
+                    inputType = InputType.NUMBER,
                     onValueChange = { onAmountChange(it) }
                 )
 
@@ -398,8 +399,8 @@ fun SalarySchemeStep(
                 id = index,
                 month = "Month ${index + 1}",
                 date = detail.date,
-                percentage = detail.amountPercentage.toString(),
-                amount = (salary * detail.amountPercentage / 100).toInt().toString(),
+                percentage = "${detail.amountPercentage.toInt()}%",
+                amount = "₹ ${(salary * detail.amountPercentage / 100).toInt()}",
                 remarks = detail.remarks,
                 showDeleteButton = true,
                 onDeleteClick = {
@@ -439,7 +440,7 @@ fun SalarySchemeStep(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Remaining",
+                    text = stringResource(R.string.remaining),
                     color = Secondary,
                     fontSize = 14.sp,
                     letterSpacing = 0.sp,
@@ -449,7 +450,7 @@ fun SalarySchemeStep(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 InfoChip(text = "₹ ${remainingAmount.toInt()}")
-                InfoChip(text = "${remainingPercentage}%")
+                InfoChip(text = "${remainingPercentage.toInt()}%")
                 InfoChip(text = "${selectedPeriod - paymentDetails.size} Month")
             }
 
@@ -459,24 +460,23 @@ fun SalarySchemeStep(
 }
 
 fun isFutureDate(dateStr: String, lastDateStr: String?): Boolean {
-    val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     return try {
-        val date = format.parse(dateStr)
-        val today = Date()
-        if (date != null) {
-            if (date.after(today)) {
-                if (lastDateStr != null) {
-                    val lastDate = format.parse(lastDateStr)
-                    date.after(lastDate)
-                } else {
-                    true
-                }
-            } else {
-                false
-            }
-        } else {
-            false
+        val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val date = LocalDate.parse(dateStr, format)
+        val today = LocalDate.now()
+
+        if (!date.isAfter(today)) {
+            return false
         }
+
+        if (lastDateStr != null) {
+            val lastDate = LocalDate.parse(lastDateStr, format)
+            if (!date.isAfter(lastDate)) {
+                return false
+            }
+        }
+
+        true
     } catch (e: Exception) {
         false
     }

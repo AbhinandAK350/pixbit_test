@@ -18,10 +18,6 @@ class HomeViewModel @Inject constructor(private val getEmployeeListUseCase: GetE
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
-    init {
-        fetchEmployeeList()
-    }
-
     fun fetchEmployeeList() {
         viewModelScope.launch {
             if (_uiState.value.endReached || _uiState.value.isLoading) return@launch
@@ -32,8 +28,8 @@ class HomeViewModel @Inject constructor(private val getEmployeeListUseCase: GetE
                 is NetworkResource.Success -> {
                     _uiState.update {
                         it.copy(
-                            employees = it.employees + result.data!!,
-                            page = it.page + 1,
+                            employees = result.data!!,
+                            page = it.page,
                             endReached = result.data.isEmpty(),
                             isLoading = false
                         )

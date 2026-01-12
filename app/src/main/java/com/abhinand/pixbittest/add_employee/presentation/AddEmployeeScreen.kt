@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -44,6 +45,7 @@ import com.abhinand.pixbittest.core.components.ErrorAlert
 import com.abhinand.pixbittest.core.navigation.Action
 import com.abhinand.pixbittest.core.theme.Container
 import com.abhinand.pixbittest.core.theme.Primary
+import com.abhinand.pixbittest.core.theme.Secondary
 import com.abhinand.pixbittest.core.utils.Util.toMillisOrNull
 import java.io.File
 import java.time.Instant
@@ -141,6 +143,9 @@ fun AddEmployeeScreen(
         val datePickerState = rememberDatePickerState(initialMillis)
 
         DatePickerDialog(
+            colors = DatePickerDefaults.colors(
+                containerColor = Container
+            ),
             onDismissRequest = { viewModel.closeDatePicker() },
             properties = DialogProperties(
                 usePlatformDefaultWidth = true
@@ -168,18 +173,24 @@ fun AddEmployeeScreen(
                         viewModel.closeDatePicker()
                     }
                 ) {
-                    Text("OK")
+                    Text("OK", color = Secondary)
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { viewModel.closeDatePicker() }
                 ) {
-                    Text("Cancel")
+                    Text("Cancel", color = Secondary)
                 }
             }
         ) {
-            DatePicker(state = datePickerState)
+            DatePicker(
+                state = datePickerState,
+                colors = DatePickerDefaults.colors(
+                    containerColor = Container,
+                    selectedDayContainerColor = Primary
+                )
+            )
         }
     }
 

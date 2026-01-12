@@ -1,4 +1,4 @@
-package com.abhinand.pixbittest.profile_details.presentation
+package com.abhinand.pixbittest.profile_details
 
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -148,6 +148,7 @@ fun ProfileDetailsScreen(
                     remarks = item.remarks ?: "N/A",
                     onDeleteClick = {}
                 )
+                Spacer(modifier = modifier.height(24.dp))
             }
         }
 
