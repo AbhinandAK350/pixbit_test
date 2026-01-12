@@ -15,6 +15,6 @@ data class AddEmployeeRequest(
     val profile_pic: File?,
     val resume: File?,
     val contract_period: Int,
-    val total_salary: Double,
+    val total_salary: Int,
     val monthly_payments: List<PaymentDetail>
 )

@@ -21,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -33,7 +32,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.abhinand.pixbittest.R
 import com.abhinand.pixbittest.core.navigation.Action
 import com.abhinand.pixbittest.core.navigation.Screen
@@ -54,6 +56,14 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
 
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.fetchFirstPage()
+        }
+    }
+
     val shouldLoadNextPage by remember {
         derivedStateOf {
             val layoutInfo = listState.layoutInfo
@@ -68,12 +78,6 @@ fun HomeScreen(
     LaunchedEffect(shouldLoadNextPage) {
         if (shouldLoadNextPage) {
             viewModel.fetchNextPage()
-        }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.fetchFirstPage()
         }
     }
 

@@ -35,8 +35,8 @@ class HomeViewModel @Inject constructor(
         val state = _uiState.value
         if (state.isLoading || state.endReached) return
 
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+        fetchJob = viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
 
             when (val result = getEmployeeListUseCase(state.page)) {
                 is NetworkResource.Success -> {

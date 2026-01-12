@@ -200,7 +200,7 @@ class AddEmployeeViewModel @Inject constructor(
                 profile_pic = _uiState.value.profileImage,
                 resume = _uiState.value.resumeFile,
                 contract_period = period,
-                total_salary = salary.toDouble(),
+                total_salary = salary.toDouble().toInt(),
                 monthly_payments = _uiState.value.paymentDetails
             )
 
