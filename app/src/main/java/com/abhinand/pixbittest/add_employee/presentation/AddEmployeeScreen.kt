@@ -188,6 +188,8 @@ fun AddEmployeeScreen(
                 state = datePickerState,
                 colors = DatePickerDefaults.colors(
                     containerColor = Container,
+                    todayContentColor = Primary,
+                    todayDateBorderColor = Primary,
                     selectedDayContainerColor = Primary
                 )
             )
