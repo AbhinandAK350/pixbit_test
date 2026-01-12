@@ -1,5 +1,7 @@
 package com.abhinand.pixbittest.core.network
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import retrofit2.HttpException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -32,4 +34,22 @@ fun NetworkError.toUserMessage(): String =
         NetworkError.Unknown ->
             "Something went wrong. Please try again."
     }
+
+val json = Json {
+    ignoreUnknownKeys = true
+    isLenient = true
+}
+
+fun HttpException.parseErrorBody(): ApiErrorResponse? {
+    return runCatching {
+        val errorJson = response()?.errorBody()?.string() ?: return null
+        json.decodeFromString<ApiErrorResponse>(errorJson)
+    }.getOrNull()
+}
+
+@Serializable
+data class ApiErrorResponse(
+    val error: String?,
+)
+
 

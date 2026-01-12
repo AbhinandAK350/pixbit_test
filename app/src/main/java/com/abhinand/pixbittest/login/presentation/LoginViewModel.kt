@@ -58,7 +58,6 @@ class LoginViewModel @Inject constructor(
                 }
 
                 is NetworkResource.Error -> {
-                    saveTokenUseCase("joyrijyo")
                     _uiState.value = _uiState.value.copy(errorMessage = result.message)
                 }
             }
