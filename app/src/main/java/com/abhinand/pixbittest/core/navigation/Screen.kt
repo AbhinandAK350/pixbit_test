@@ -1,6 +1,7 @@
 package com.abhinand.pixbittest.core.navigation
 
 import androidx.navigation3.runtime.NavKey
+import com.abhinand.pixbittest.home.domain.model.Employee
 import kotlinx.serialization.Serializable
 
 sealed class Screen : NavKey {
@@ -18,6 +19,6 @@ sealed class Screen : NavKey {
     object AddEmployee : Screen()
 
     @Serializable
-    data class ProfileDetails(val employeeId: String) : Screen()
+    data class ProfileDetails(val employee: Employee) : Screen()
 
 }

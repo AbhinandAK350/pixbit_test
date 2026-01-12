@@ -1,7 +1,9 @@
 package com.abhinand.pixbittest.home.domain.model
 
 import com.abhinand.pixbittest.home.data.remote.dto.MonthlyPaymentDto
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Employee(
     val id: Int,
     val userId: Int,

@@ -53,6 +53,7 @@ fun EmployeeItem(
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.img_employee_placeholder),
+            error = painterResource(R.drawable.img_employee_placeholder),
             contentDescription = "Employee Image",
             contentScale = ContentScale.Crop,
             modifier = Modifier

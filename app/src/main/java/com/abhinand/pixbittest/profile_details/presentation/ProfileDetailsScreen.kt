@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -49,10 +50,15 @@ import com.abhinand.pixbittest.core.theme.Secondary
 import com.abhinand.pixbittest.core.theme.interMedium
 import com.abhinand.pixbittest.core.theme.interRegular
 import com.abhinand.pixbittest.core.theme.interSemiBold
+import com.abhinand.pixbittest.home.domain.model.Employee
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileDetailsScreen(modifier: Modifier = Modifier, onNavigate: (Action) -> Unit) {
+fun ProfileDetailsScreen(
+    modifier: Modifier = Modifier,
+    onNavigate: (Action) -> Unit,
+    employee: Employee
+) {
 
     Scaffold(topBar = {
         TopAppBar(
@@ -88,12 +94,22 @@ fun ProfileDetailsScreen(modifier: Modifier = Modifier, onNavigate: (Action) -> 
         ) {
 
             item {
-                ProfileHeader()
+                ProfileHeader(
+                    url = employee.profilePicUrl ?: "",
+                    name = "${employee.firstName} ${employee.lastName}",
+                    role = employee.designation
+                )
                 Spacer(modifier = modifier.height(24.dp))
             }
 
             item {
-                ContactInfoCard()
+                ContactInfoCard(
+                    phone = employee.mobileNumber,
+                    email = employee.email,
+                    dob = employee.dob,
+                    gender = employee.gender,
+                    address = employee.address
+                )
                 Spacer(modifier = modifier.height(8.dp))
             }
 
@@ -103,18 +119,21 @@ fun ProfileDetailsScreen(modifier: Modifier = Modifier, onNavigate: (Action) -> 
             }
 
             item {
-                SalarySchemeHeader()
+                SalarySchemeHeader(
+                    contractPeriod = employee.contractPeriod,
+                    salary = employee.totalSalary
+                )
                 Spacer(modifier = modifier.height(24.dp))
             }
 
-            items(3) { item ->
+            itemsIndexed(employee.monthlyPayments) { index, item ->
                 SalaryMonthCard(
-                    id = 0,
-                    month = "Month 1",
-                    date = "12-12-2024",
-                    percentage = "20%",
-                    amount = "₹ 12,000",
-                    remarks = "First Salary",
+                    id = item.id,
+                    month = "Month ${index + 1}",
+                    date = item.payment_date,
+                    percentage = "${item.amount_percentage}%",
+                    amount = "₹${item.amount}",
+                    remarks = item.remarks ?: "N/A",
                     onDeleteClick = {}
                 )
             }
@@ -124,24 +143,26 @@ fun ProfileDetailsScreen(modifier: Modifier = Modifier, onNavigate: (Action) -> 
 }
 
 @Composable
-private fun ProfileHeader(modifier: Modifier = Modifier) {
+private fun ProfileHeader(modifier: Modifier = Modifier, url: String, name: String, role: String) {
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AsyncImage(
-            model = "https://picsum.photos/200",
+            model = url,
             contentDescription = null,
             modifier = modifier
                 .size(125.dp)
                 .clip(CircleShape),
+            placeholder = painterResource(R.drawable.img_employee_placeholder),
+            error = painterResource(R.drawable.img_employee_placeholder),
             contentScale = ContentScale.Crop
         )
 
         Spacer(modifier = modifier.height(24.dp))
 
         Text(
-            text = "John Joy",
+            text = name,
             fontSize = 20.sp,
             fontWeight = FontWeight.W500,
             fontFamily = interMedium,
@@ -152,7 +173,7 @@ private fun ProfileHeader(modifier: Modifier = Modifier) {
         Spacer(modifier = modifier.height(4.dp))
 
         Text(
-            text = "Supervisor",
+            text = role,
             fontSize = 14.sp,
             color = Color(0xFF2A5277),
             fontFamily = interRegular,
@@ -163,7 +184,13 @@ private fun ProfileHeader(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ContactInfoCard() {
+private fun ContactInfoCard(
+    phone: String,
+    email: String,
+    dob: String,
+    gender: String,
+    address: String
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -178,22 +205,22 @@ private fun ContactInfoCard() {
         ) {
 
             TwoColumnRow(
-                leftTitle = "Contact Number",
-                leftValue = "+91 8412094567",
-                rightTitle = "Email",
-                rightValue = "johnjoy@mail.com"
+                leftTitle = stringResource(R.string.contact_number),
+                leftValue = phone,
+                rightTitle = stringResource(R.string.email),
+                rightValue = email
             )
 
             TwoColumnRow(
-                leftTitle = "Date of birth",
-                leftValue = "12-12-2022",
-                rightTitle = "Gender",
-                rightValue = "Male"
+                leftTitle = stringResource(R.string.date_of_birth),
+                leftValue = dob,
+                rightTitle = stringResource(R.string.gender),
+                rightValue = gender
             )
 
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(
-                    text = "Address",
+                    text = stringResource(R.string.address),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W500,
                     color = Primary,
@@ -201,7 +228,7 @@ private fun ContactInfoCard() {
                     fontFamily = interMedium
                 )
                 Text(
-                    text = "12 street, The Marine World, los angeles",
+                    text = address,
                     fontSize = 14.sp,
                     letterSpacing = 0.sp,
                     fontFamily = interRegular,
@@ -326,7 +353,7 @@ private fun ResumeCard() {
 }
 
 @Composable
-private fun SalarySchemeHeader() {
+private fun SalarySchemeHeader(contractPeriod: Int, salary: Int) {
     Card(
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFE2F1FF))
@@ -345,7 +372,7 @@ private fun SalarySchemeHeader() {
                 fontSize = 14.sp
             )
             Text(
-                text = "3 Months   ₹60,000",
+                text = "$contractPeriod Months   ₹${salary}",
                 color = Secondary,
                 fontWeight = FontWeight.W500,
                 fontFamily = interMedium,

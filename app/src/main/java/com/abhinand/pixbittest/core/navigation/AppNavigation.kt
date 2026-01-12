@@ -63,7 +63,7 @@ fun AppNavigation(startDestination: Screen) {
             }
 
             entry<Screen.ProfileDetails> {
-                ProfileDetailsScreen(onNavigate = ::handleNavigation)
+                ProfileDetailsScreen(employee = it.employee, onNavigate = ::handleNavigation)
             }
         }, predictivePopTransitionSpec = {
             EnterTransition.None.togetherWith(ExitTransition.None)

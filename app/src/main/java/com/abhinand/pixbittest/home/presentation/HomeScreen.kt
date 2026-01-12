@@ -21,9 +21,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,6 +51,12 @@ fun HomeScreen(
 
     val uiState by viewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
+
+    //    LaunchedEffect(isLastItemReached) {
+//        if (isLastItemReached && !uiState.isLoading && !uiState.endReached) {
+//            viewModel.fetchEmployeeList()
+//        }
+//    }
 
     Scaffold(topBar = {
         TopAppBar(title = {
@@ -98,15 +105,18 @@ fun HomeScreen(
                 modifier = modifier.padding(top = contentPadding.calculateTopPadding()),
                 contentPadding = PaddingValues(vertical = 15.dp)
             ) {
-
-                items(uiState.employees) { employee ->
+                items(
+                    items = uiState.employees,
+                    key = { it.id }
+                ) { employee ->
                     EmployeeItem(
-                        employeeImageUrl = employee.profilePicUrl ?: "",
+                        employeeImageUrl = employee.profilePicUrl.orEmpty(),
                         name = "${employee.firstName} ${employee.lastName}",
                         phone = employee.mobileNumber,
                         onItemClick = {
-                            onNavigate(Action.Push(Screen.ProfileDetails("00")))
-                        })
+                            onNavigate(Action.Push(Screen.ProfileDetails(employee)))
+                        }
+                    )
                 }
 
                 item {
@@ -121,16 +131,6 @@ fun HomeScreen(
                         }
                     }
                 }
-
-            }
-        }
-
-        LaunchedEffect(listState.layoutInfo) {
-            val lastVisibleItemIndex =
-                listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-            val totalItemsCount = listState.layoutInfo.totalItemsCount
-            if (totalItemsCount > 0 && lastVisibleItemIndex >= totalItemsCount - 1 && !uiState.isLoading && !uiState.endReached) {
-                viewModel.fetchEmployeeList()
             }
         }
 
