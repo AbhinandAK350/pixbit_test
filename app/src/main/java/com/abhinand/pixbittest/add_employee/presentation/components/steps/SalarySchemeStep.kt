@@ -126,7 +126,7 @@ fun SalarySchemeStep(
             },
             dismissButton = {
                 TextButton(onClick = { showConfirmationDialog = false }) {
-                    Text("Cancel", color = Color.DarkGray)
+                    Text("Cancel", color = Secondary)
                 }
             }
         )
