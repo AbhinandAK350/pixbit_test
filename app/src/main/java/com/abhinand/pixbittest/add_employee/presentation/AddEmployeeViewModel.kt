@@ -204,11 +204,13 @@ class AddEmployeeViewModel @Inject constructor(
                 monthly_payments = _uiState.value.paymentDetails
             )
 
-            _uiState.update { it.copy(isLoading = false) }
-
             Log.e("AddEmployeeViewModel", "onSaveClick: $addEmployeeRequest")
 
-            when (val result = addEmployeeUseCase(addEmployeeRequest)) {
+            val result = addEmployeeUseCase(addEmployeeRequest)
+
+            _uiState.update { it.copy(isLoading = false) }
+
+            when (result) {
                 is NetworkResource.Success -> {
                     onNavigate(Action.Push(Screen.Home, clearStack = true))
                 }

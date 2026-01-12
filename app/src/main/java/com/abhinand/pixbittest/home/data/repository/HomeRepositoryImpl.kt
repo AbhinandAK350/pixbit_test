@@ -24,7 +24,7 @@ class HomeRepositoryImpl @Inject constructor(
             if (response.data.isNotEmpty()) {
                 NetworkResource.Success(response.data.map { it.toDomain() })
             } else {
-                NetworkResource.Error("No employees found")
+                NetworkResource.Error("Add employees to view here")
             }
         } catch (e: Exception) {
             Log.e("RegisterRepositoryImpl", "register: ", e)

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
@@ -32,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -129,7 +131,8 @@ fun LoginScreen(
                             disabledContainerColor = Color.White,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent
-                        )
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -177,7 +180,8 @@ fun LoginScreen(
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent
                         ),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                     )
 
                     Spacer(modifier = Modifier.height(32.dp))
