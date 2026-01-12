@@ -3,11 +3,13 @@ package com.abhinand.pixbittest.register.data.repository
 import android.util.Log
 import com.abhinand.pixbittest.core.network.NetworkResource
 import com.abhinand.pixbittest.core.network.NetworkUtils
+import com.abhinand.pixbittest.core.network.parseErrorBody
 import com.abhinand.pixbittest.core.network.toNetworkError
 import com.abhinand.pixbittest.core.network.toUserMessage
 import com.abhinand.pixbittest.register.data.remote.api.RegisterApi
 import com.abhinand.pixbittest.register.data.remote.dto.RegisterRequest
 import com.abhinand.pixbittest.register.domain.repository.RegisterRepository
+import retrofit2.HttpException
 import javax.inject.Inject
 
 class RegisterRepositoryImpl @Inject constructor(
@@ -20,15 +22,23 @@ class RegisterRepositoryImpl @Inject constructor(
         }
         return try {
             val response = api.register(registerRequest)
-            if (response.success) {
+            if (response.access_token != null) {
                 NetworkResource.Success(Unit)
             } else {
                 NetworkResource.Error("Registration failed")
             }
         } catch (e: Exception) {
             Log.e("RegisterRepositoryImpl", "register: ", e)
-            val error = e.toNetworkError()
-            NetworkResource.Error(error.toUserMessage())
+            val errorMessage = when (e) {
+                is HttpException -> {
+                    e.parseErrorBody()?.error
+                        ?: e.toNetworkError().toUserMessage()
+                }
+
+                else -> e.toNetworkError().toUserMessage()
+            }
+
+            NetworkResource.Error(errorMessage)
         }
     }
 }

@@ -34,6 +34,8 @@ import com.abhinand.pixbittest.core.theme.interRegular
 @Composable
 fun EmployeeItem(
     modifier: Modifier = Modifier,
+    name: String,
+    phone: String,
     employeeImageUrl: String,
     onItemClick: () -> Unit
 ) {
@@ -62,7 +64,7 @@ fun EmployeeItem(
 
         Column(verticalArrangement = Arrangement.Center) {
             Text(
-                "Employee Name",
+                text = name,
                 fontFamily = interMedium,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.W500,
@@ -70,7 +72,7 @@ fun EmployeeItem(
             )
             Spacer(modifier = modifier.height(6.dp))
             Text(
-                "Phone",
+                text = phone,
                 fontSize = 14.sp,
                 fontFamily = interRegular,
                 color = Color(0xFF2A5277),
@@ -84,5 +86,5 @@ fun EmployeeItem(
 @Preview(showBackground = true)
 @Composable
 fun PreviewEmployee() {
-    EmployeeItem(employeeImageUrl = "", onItemClick = {})
+    EmployeeItem(employeeImageUrl = "", name = "", phone = "", onItemClick = {})
 }

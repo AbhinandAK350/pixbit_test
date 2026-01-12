@@ -21,10 +21,10 @@ class HomeRepositoryImpl @Inject constructor(
         }
         return try {
             val response = api.getEmployees(page)
-            if (response.success) {
+            if (response.data.isNotEmpty()) {
                 NetworkResource.Success(response.data.map { it.toDomain() })
             } else {
-                NetworkResource.Error("Registration failed")
+                NetworkResource.Error("No employees found")
             }
         } catch (e: Exception) {
             Log.e("RegisterRepositoryImpl", "register: ", e)

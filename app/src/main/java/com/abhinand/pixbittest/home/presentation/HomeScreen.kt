@@ -100,9 +100,13 @@ fun HomeScreen(
             ) {
 
                 items(uiState.employees) { employee ->
-                    EmployeeItem(employeeImageUrl = "", onItemClick = {
-                        onNavigate(Action.Push(Screen.ProfileDetails("00")))
-                    })
+                    EmployeeItem(
+                        employeeImageUrl = employee.profilePicUrl ?: "",
+                        name = "${employee.firstName} ${employee.lastName}",
+                        phone = employee.mobileNumber,
+                        onItemClick = {
+                            onNavigate(Action.Push(Screen.ProfileDetails("00")))
+                        })
                 }
 
                 item {
